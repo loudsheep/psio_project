@@ -1,4 +1,4 @@
-package org.loudsheep.psio_project;
+package org.loudsheep.psio_project.frontend.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
