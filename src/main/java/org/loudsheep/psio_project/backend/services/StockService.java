@@ -16,11 +16,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class StockService {
-    private static final String BASE_URL = "https://query1.finance.yahoo.com/v8/finance/chart/";
+    private static final String BASE_URL = "https://query1.finance.yahoo.com/v8/finance/chart/%s?events=capitalGain|div|split&formatted=true&includeAdjustedClose=true&interval=1d&period1=%s&period2=%s";
 
     // Fetch and parse stock data for a given symbol
-    public StockData getStockData(String symbol) throws IOException {
-        String urlString = BASE_URL + symbol;
+    public StockData getStockData(String symbol, long startTime, long endTime) throws IOException {
+        String urlString = String.format(BASE_URL, symbol, startTime, endTime);
+        System.out.println(urlString);
         String jsonResponse = fetchJsonData(urlString);
 
         // Call a custom parse method to handle JSON processing
@@ -79,6 +80,4 @@ public class StockService {
         // Create and return StockData object
         return new StockData(symbol, dailyData);
     }
-
-
 }

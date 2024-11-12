@@ -4,11 +4,22 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
+import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.services.StockService;
 
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.util.Date;
 
 public class HelloController {
+    public static long toEpochSeconds(int year, int month, int day) {
+        LocalDateTime dateTime = LocalDateTime.of(year, month, day, 0, 0);
+        return dateTime.toEpochSecond(ZoneOffset.UTC);
+    }
+
     @FXML
     private Label welcomeText;
 
@@ -23,8 +34,16 @@ public class HelloController {
             protected Void call() {
                 StockService s = new StockService();
                 try {
+
                     // Run StockService and print result to console
-                    String stockData = s.getStockData("IBM").toString();
+                    long startTime = toEpochSeconds(2024, 2, 1);
+                    long endTime = toEpochSeconds(2024, 10, 1);
+
+                    System.out.println(startTime);
+                    System.out.println(endTime);
+
+                    StockData stockData = s.getStockData("IBM", startTime, endTime);
+                    System.out.println("Stock data size: " + stockData.getDailyData().size());
                     System.out.println(stockData);
 
                 } catch (IOException e) {

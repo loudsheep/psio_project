@@ -2,6 +2,7 @@ module org.loudsheep.psio_project {
     requires javafx.controls;
     requires javafx.fxml;
     requires com.google.gson;
+    requires java.sql;
 
 
     opens org.loudsheep.psio_project to javafx.fxml;
