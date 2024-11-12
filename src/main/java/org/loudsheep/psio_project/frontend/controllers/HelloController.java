@@ -2,8 +2,14 @@ package org.loudsheep.psio_project.frontend.controllers;
 
 import javafx.application.Platform;
 import javafx.concurrent.Task;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
+import javafx.scene.chart.XYChart;
+import javafx.scene.control.DatePicker;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextField;
+import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.services.StockService;
 
@@ -22,11 +28,25 @@ public class HelloController {
 
     @FXML
     private Label welcomeText;
+    @FXML
+    public LineChart lineChart;
+    @FXML
+    private DatePicker startDate;
+    @FXML
+    private DatePicker endDate;
+    @FXML
+    private TextField symbol;
 
     @FXML
     protected void onHelloButtonClick() {
         // Update label text immediately
         welcomeText.setText("Welcome to JavaFX Application!");
+    }
+
+    @FXML
+    protected void onGetButtonClick() {
+        long startEpoch = toEpochSeconds(startDate.getValue().getYear(), startDate.getValue().getMonthValue(), startDate.getValue().getDayOfMonth());
+        long endEpoch = toEpochSeconds(endDate.getValue().getYear(), endDate.getValue().getMonthValue(), endDate.getValue().getDayOfMonth());
 
         // Create a background task for StockService call
         Task<Void> task = new Task<>() {
@@ -34,18 +54,18 @@ public class HelloController {
             protected Void call() {
                 StockService s = new StockService();
                 try {
+                    StockData stockData = s.getStockData("IBM", startEpoch, endEpoch);
 
-                    // Run StockService and print result to console
-                    long startTime = toEpochSeconds(2024, 2, 1);
-                    long endTime = toEpochSeconds(2024, 10, 1);
+//                    System.out.println("Stock data size: " + stockData.getDailyData().size());
+//                    System.out.println(stockData);
+                    XYChart.Series series = new XYChart.Series();
+                    series.setName(symbol.getText() + " chart");
 
-                    System.out.println(startTime);
-                    System.out.println(endTime);
+                    for (DayStockData day : stockData.getDailyData()) {
+                        series.getData().add(new XYChart.Data<>(day.getTimestamp() + "", day.getClose()));
+                    }
 
-                    StockData stockData = s.getStockData("IBM", startTime, endTime);
-                    System.out.println("Stock data size: " + stockData.getDailyData().size());
-                    System.out.println(stockData);
-
+                    Platform.runLater(() -> lineChart.getData().add(series));
                 } catch (IOException e) {
                     e.printStackTrace();
                     Platform.runLater(() -> welcomeText.setText("Failed to retrieve stock data."));
