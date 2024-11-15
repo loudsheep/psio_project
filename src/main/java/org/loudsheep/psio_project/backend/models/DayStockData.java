@@ -4,6 +4,7 @@ import java.util.Date;
 
 public class DayStockData {
     private long timestamp;
+    private Date date;
     private double low;
     private double high;
     private double open;
@@ -16,6 +17,7 @@ public class DayStockData {
         this.high = high;
         this.open = open;
         this.close = close;
+        this.date = new Date(timestamp * 1000);
     }
 
     // Getters for each field

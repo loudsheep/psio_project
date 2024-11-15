@@ -58,7 +58,11 @@ public class StockService {
 
         // Check the HTTP response code
         int responseCode = connection.getResponseCode();
-        if (responseCode != HttpURLConnection.HTTP_OK) {
+        if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
+
+        } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
+
+        } else if (responseCode != HttpURLConnection.HTTP_OK) {
             throw new IOException("Failed to fetch data, HTTP response code: " + responseCode);
         }
 

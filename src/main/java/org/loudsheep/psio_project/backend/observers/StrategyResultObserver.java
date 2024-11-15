@@ -1,7 +1,9 @@
 package org.loudsheep.psio_project.backend.observers;
 
-import org.loudsheep.psio_project.backend.strategies.StrategyResult;
+import org.loudsheep.psio_project.backend.models.StrategyResult;
+import org.loudsheep.psio_project.backend.models.Transaction;
 
 public interface StrategyResultObserver {
-    void onStrategyResult(StrategyResult result);
+    void onStrategyResultUpdate(StrategyResult result);
+    void onTransactionAdd(Transaction transaction);
 }
