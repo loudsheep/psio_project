@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" stylesheets="@../styles/strategy-select.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.loudsheep.psio_project.frontend.controllers.StrategySelectView">
+    <children>
+        <MenuButton fx:id="strategyMenuButton" layoutX="13.0" layoutY="14.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="168.0" text="Select strategy">
+            <items>
+                <MenuItem fx:id="simpleUDStrategyButton" mnemonicParsing="false" onAction="#handleSimpleStrategy" text="Simple Up&amp;Down" />
+            </items>
+        </MenuButton>
+
+        <VBox fx:id="parametersVBox" layoutX="13.0" layoutY="53.0" prefHeight="189.0" prefWidth="168.0" />
+    </children>
+</AnchorPane>

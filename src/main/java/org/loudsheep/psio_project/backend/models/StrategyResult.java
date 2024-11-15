@@ -43,4 +43,14 @@ public class StrategyResult {
     public void setCurrentBudget(double currentBudget) {
         this.currentBudget = currentBudget;
     }
+
+    @Override
+    public String toString() {
+        return "StrategyResult{" +
+                "initialBudget=" + initialBudget +
+                ", currentBudget=" + currentBudget +
+                ", numOfTransactions=" + this.getNumberOfTransactions() +
+                ", roi=" + this.getROI() +
+                '}';
+    }
 }
