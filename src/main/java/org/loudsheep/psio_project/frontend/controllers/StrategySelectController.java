@@ -3,6 +3,8 @@ package org.loudsheep.psio_project.frontend.controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.MenuButton;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
@@ -12,7 +14,7 @@ import org.loudsheep.psio_project.App;
 import java.io.IOException;
 import java.util.Map;
 
-public class StrategySelectView {
+public class StrategySelectController {
     public MenuItem simpleUDStrategyButton;
     public VBox parametersVBox;
     public MenuButton strategyMenuButton;
@@ -37,7 +39,10 @@ public class StrategySelectView {
 
             parametersVBox.getChildren().clear();
             parametersVBox.getChildren().add(formNode);
-        } catch (IOException e) {
+        } catch (Exception e) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Exception while loading data", ButtonType.OK);
+            alert.showAndWait();
+
             e.printStackTrace();
         }
     }

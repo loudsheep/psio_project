@@ -5,6 +5,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,6 +16,7 @@ public class SimpleStrategyFormController implements FormController {
 
     public VBox VBoxPane;
     public TextField daysField;
+    public TextField budgetField;
     private Label errorLabel;
 
     private FormSubmitCallback submitCallback;
@@ -30,6 +32,7 @@ public class SimpleStrategyFormController implements FormController {
             return null; // Reject the change
         };
         daysField.setTextFormatter(new TextFormatter<>(integerFilter));
+        budgetField.setTextFormatter(new TextFormatter<>(integerFilter));
     }
 
     @Override
@@ -46,22 +49,26 @@ public class SimpleStrategyFormController implements FormController {
     public void setError(String text) {
         if (Objects.equals(text, "") && this.errorLabel != null) {
             this.VBoxPane.getChildren().remove(errorLabel);
+            this.errorLabel = null;
             return;
         }
 
         if (this.errorLabel == null) {
             this.errorLabel = new Label(text);
+            this.errorLabel.setTextFill(Color.RED);
             this.VBoxPane.getChildren().add(2, this.errorLabel);
         } else {
             this.errorLabel.setText(text);
         }
     }
 
+    int x= 0;
     @FXML
     private void handleSubmit() {
         if (submitCallback != null) {
             Map<String, Object> formData = new HashMap<>();
-            formData.put("daysField", daysField.getText());
+            formData.put("daysBackToCheck", Integer.parseInt(daysField.getText()));
+            formData.put("budget", Integer.parseInt(budgetField.getText()));
             submitCallback.onSubmit(formData);
         }
     }

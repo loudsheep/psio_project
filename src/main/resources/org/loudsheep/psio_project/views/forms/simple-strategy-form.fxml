@@ -6,6 +6,8 @@
 
 <VBox fx:id="VBoxPane" prefHeight="124.0" prefWidth="150.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.loudsheep.psio_project.frontend.controllers.SimpleStrategyFormController">
     <children>
+      <Label text="Simulation budget" />
+      <TextField fx:id="budgetField" promptText="Enter a number" />
         <Label text="Trend number of days" />
         <TextField fx:id="daysField" promptText="Enter a number">
             <VBox.margin>

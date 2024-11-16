@@ -3,7 +3,7 @@ package org.loudsheep.psio_project.backend.strategies;
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.models.StrategyResult;
 
-public abstract class Strategy {
+public abstract class Strategy implements Validatable {
     protected String STRATEGY_DESCRIPTION = "Strategy description";
     protected int stockOwned;
     protected StrategyResult result;
