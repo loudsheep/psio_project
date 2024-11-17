@@ -6,33 +6,35 @@ import org.loudsheep.psio_project.backend.strategies.SimpleUpAndDownStrategy;
 import org.loudsheep.psio_project.backend.strategies.Strategy;
 import org.loudsheep.psio_project.backend.strategies.Validatable;
 
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 public class TradingManager implements StockDataObserver {
+    private static TradingManager instance;
+
     private final StockService stockService;
     private StockData stockData;
     private Strategy strategyInstance;
 
-    public TradingManager() {
+    private TradingManager() {
         this.stockService = new StockService();
         this.stockService.addObserver(this);
     }
 
-    public void getStockData(String symbol, long startTime, long endTime) throws Exception {
-        // Use StockService to fetch data
-        stockService.getStockData(symbol, startTime, endTime);
+    public void setStockData(String symbol, long startTime, long endTime) {
+        // use StockService to fetch data (async)
+        new Thread(() -> stockService.getStockData(symbol, startTime, endTime)).start();
     }
 
-    public String[] setStrategy(String strategyName, Map<String, Object> params) throws Exception {
+    public String[] setStrategy(String strategyName, Map<String, Object> params) {
         switch (strategyName) {
             case "SimpleUpAndDown":
-                Validatable instance = SimpleUpAndDownStrategy.class.getDeclaredConstructor().newInstance();
-
-                String[] errors = instance.validateData(params);
+                String[] errors = SimpleUpAndDownStrategy.validateData(params);
                 if (errors.length > 0) return errors;
 
-                this.strategyInstance = (SimpleUpAndDownStrategy) instance.create(params);
+                this.strategyInstance = SimpleUpAndDownStrategy.create(params);
+                return new String[0];
             default:
                 throw new IllegalArgumentException("Unknown strategy: " + strategyName);
         }
@@ -46,8 +48,27 @@ public class TradingManager implements StockDataObserver {
         this.stockService.removeObserver(observer);
     }
 
+    public boolean isReadyToExecute() {
+        if (this.strategyInstance == null) return false;
+        if (this.stockData == null) return false;
+
+        return true;
+    }
+
     @Override
     public void onDataChanged(StockData data) {
         this.stockData = data;
+        System.out.println("Set new Stock Data - " + data.getDailyData().size() + " data points");
+    }
+
+    @Override
+    public void setError(String error) {
+    }
+
+    public static TradingManager getInstance() {
+        if (instance == null) {
+            instance = new TradingManager();
+        }
+        return instance;
     }
 }

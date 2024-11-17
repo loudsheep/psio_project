@@ -41,13 +41,7 @@ public class HelloController implements StockDataObserver {
     }
 
     private void fetchStockData(String symbol, long startTime, long endTime) {
-        new Thread(() -> {
-            try {
-                stockService.getStockData(symbol, startTime, endTime);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }).start();
+        new Thread(() -> stockService.getStockData(symbol, startTime, endTime)).start();
     }
 
     @FXML
@@ -81,6 +75,11 @@ public class HelloController implements StockDataObserver {
 
             welcomeText.setText("Chart loaded!");
         });
+    }
+
+    @Override
+    public void setError(String error) {
+
     }
 
     public static long toEpochSeconds(int year, int month, int day) {

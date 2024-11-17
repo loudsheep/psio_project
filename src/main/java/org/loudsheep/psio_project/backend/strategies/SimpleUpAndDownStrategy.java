@@ -14,6 +14,8 @@ public class SimpleUpAndDownStrategy extends Strategy {
         super(budget);
         this.STRATEGY_DESCRIPTION = "Simple strategy that sells when downward trend, and buys when upward";
         this.daysBackToCheck = daysBackToCheck;
+
+        System.out.println("NEW SimpleUpAndDownStrategy created");
     }
 
     private int getLastDaysTrend(StockData data, int currentDayIdx, int daysBack) {
@@ -50,11 +52,17 @@ public class SimpleUpAndDownStrategy extends Strategy {
     }
 
     @Override
-    public String[] validateData(Map<String, Object> formData) {
+    public String getName() {
+        return "SimpleUpAndDown Strategy";
+    }
+
+    public static String[] validateData(Map<String, Object> formData) {
         List<String> errors = new ArrayList<>();
 
+        System.out.println(formData);
+
         if (!formData.containsKey("budget") || !(formData.get("budget") instanceof Double)) {
-            errors.add("Budget is required and must be a string.");
+            errors.add("Budget is required and must be a number value.");
         }
 
         if (!formData.containsKey("daysBackToCheck") || !(formData.get("daysBackToCheck") instanceof Integer)) {
@@ -66,11 +74,10 @@ public class SimpleUpAndDownStrategy extends Strategy {
             }
         }
 
-        return (String[]) errors.toArray();
+        return errors.toArray(new String[0]);
     }
 
-    @Override
-    public Validatable create(Map<String, Object> formData) {
+    public static SimpleUpAndDownStrategy create(Map<String, Object> formData) {
         return new SimpleUpAndDownStrategy((Double) formData.get("budget"), (Integer) formData.get("daysBackToCheck"));
     }
 }

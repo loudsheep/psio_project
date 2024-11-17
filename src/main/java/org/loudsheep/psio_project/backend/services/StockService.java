@@ -36,17 +36,29 @@ public class StockService {
         }
     }
 
+    private void notifyError(String error) {
+        for (StockDataObserver observer : observers) {
+            observer.setError(error);
+        }
+    }
+
     // Fetch and parse stock data for a given symbol
-    public void getStockData(String symbol, long startTime, long endTime) throws IOException {
+    public void getStockData(String symbol, long startTime, long endTime){
         String urlString = String.format(BASE_URL, symbol, startTime, endTime);
         System.out.println(urlString);
-        String jsonResponse = fetchJsonData(urlString);
+        String jsonResponse = null;
+        try {
+            jsonResponse = fetchJsonData(urlString);
 
-        // Parse the fetched data
-        StockData stockData = parseStockData(symbol, jsonResponse);
+            // Parse the fetched data
+            StockData stockData = parseStockData(symbol, jsonResponse);
 
-        // Notify observers with the new stock data
-        notifyObservers(stockData);
+            // Notify observers with the new stock data
+            notifyObservers(stockData);
+        } catch (IOException e) {
+            this.notifyError(e.getMessage());
+//            throw new RuntimeException(e);
+        }
     }
 
     // Fetch JSON data from URL
@@ -58,9 +70,9 @@ public class StockService {
         // Check the HTTP response code
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
-
+            throw new IOException("Bad request! Dates must not be in future!");
         } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
-
+            throw new IOException("Symbol not found");
         } else if (responseCode != HttpURLConnection.HTTP_OK) {
             throw new IOException("Failed to fetch data, HTTP response code: " + responseCode);
         }

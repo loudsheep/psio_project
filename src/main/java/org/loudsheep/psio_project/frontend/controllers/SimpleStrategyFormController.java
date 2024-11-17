@@ -6,13 +6,14 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import org.loudsheep.psio_project.backend.services.TradingManager;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
-public class SimpleStrategyFormController implements FormController {
+public class SimpleStrategyFormController implements FormControllerInterface, FormErrorCallback {
 
     public VBox VBoxPane;
     public TextField daysField;
@@ -56,7 +57,8 @@ public class SimpleStrategyFormController implements FormController {
         if (this.errorLabel == null) {
             this.errorLabel = new Label(text);
             this.errorLabel.setTextFill(Color.RED);
-            this.VBoxPane.getChildren().add(2, this.errorLabel);
+            this.errorLabel.setWrapText(true);
+            this.VBoxPane.getChildren().add(4, this.errorLabel);
         } else {
             this.errorLabel.setText(text);
         }
@@ -64,11 +66,15 @@ public class SimpleStrategyFormController implements FormController {
 
     int x= 0;
     @FXML
-    private void handleSubmit() {
+    private void handleSubmit() throws Exception {
         if (submitCallback != null) {
             Map<String, Object> formData = new HashMap<>();
             formData.put("daysBackToCheck", Integer.parseInt(daysField.getText()));
-            formData.put("budget", Integer.parseInt(budgetField.getText()));
+            formData.put("budget", Double.parseDouble(budgetField.getText()));
+
+            String[] errors = TradingManager.getInstance().setStrategy("SimpleUpAndDown", formData);
+            if (errors.length > 0) this.setError(errors[0]);
+
             submitCallback.onSubmit(formData);
         }
     }
