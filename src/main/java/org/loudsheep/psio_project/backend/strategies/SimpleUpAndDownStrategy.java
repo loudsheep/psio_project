@@ -2,17 +2,22 @@ package org.loudsheep.psio_project.backend.strategies;
 
 import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
+import org.loudsheep.psio_project.backend.models.StrategyResult;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SimpleUpAndDownStrategy extends Strategy {
+public class SimpleUpAndDownStrategy implements TradingStrategy {
+    private static final String name = "SimpleUpAndDown Strategy";
+    private static final String description = "Simple strategy that sells when downward trend, and buys when upward";
+
+    private final double budget;
     private final int daysBackToCheck;
+    private StrategyResult result;
 
     public SimpleUpAndDownStrategy(double budget, int daysBackToCheck) {
-        super(budget);
-        this.STRATEGY_DESCRIPTION = "Simple strategy that sells when downward trend, and buys when upward";
+        this.budget = budget;
         this.daysBackToCheck = daysBackToCheck;
 
         System.out.println("NEW SimpleUpAndDownStrategy created");
@@ -31,7 +36,7 @@ public class SimpleUpAndDownStrategy extends Strategy {
     }
 
     @Override
-    public void execute(StockData data) {
+    public StrategyResult execute(StockData data) {
         for (int i = 0; i < data.getDailyData().size(); i++) {
             DayStockData dayData = data.getDailyData().get(i);
             double price = dayData.getOpen();
@@ -39,9 +44,9 @@ public class SimpleUpAndDownStrategy extends Strategy {
             int trend = this.getLastDaysTrend(data, i, this.daysBackToCheck);
 
             if (trend > 0) {
-                this.buyStock(this.maxStockToBuy(price), price, dayData.getTimestamp());
+                this.result.buyStock(this.result.maxStockToBuy(price), price, dayData.getTimestamp());
             } else {
-                this.sellAllStock(price, dayData.getTimestamp());
+                this.result.sellAllStock(price, dayData.getTimestamp());
             }
 
             try {
@@ -49,11 +54,25 @@ public class SimpleUpAndDownStrategy extends Strategy {
             } catch (InterruptedException _) {
             }
         }
+
+        return this.result;
+    }
+
+    @Override
+    public boolean isReadyToExecute() {
+        if (this.budget <= 0) return false;
+        if (this.daysBackToCheck <= 0) return false;
+        return true;
+    }
+
+    @Override
+    public String getDescription() {
+        return SimpleUpAndDownStrategy.description;
     }
 
     @Override
     public String getName() {
-        return "SimpleUpAndDown Strategy";
+        return SimpleUpAndDownStrategy.name;
     }
 
     public static String[] validateData(Map<String, Object> formData) {

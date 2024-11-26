@@ -12,6 +12,16 @@ public class StockData {
         this.dailyData = dailyData;
     }
 
+    public long getFirstDataPointTimestamp() {
+        if (!this.dailyData.isEmpty()) return this.dailyData.getFirst().getTimestamp();
+        return 0;
+    }
+
+    public long getLastDataPointTimestamp() {
+        if (!this.dailyData.isEmpty()) return this.dailyData.getLast().getTimestamp();
+        return 0;
+    }
+
     // Getters
     public String getSymbol() { return symbol; }
     public List<DayStockData> getDailyData() { return dailyData; }

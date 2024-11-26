@@ -3,9 +3,7 @@ package org.loudsheep.psio_project.backend.strategies;
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.models.StrategyResult;
 
-import java.util.Map;
-
-public abstract class Strategy implements Validatable {
+public abstract class Strategy {
     protected String STRATEGY_DESCRIPTION = "Strategy description";
     protected int stockOwned;
     protected StrategyResult result;
@@ -59,6 +57,4 @@ public abstract class Strategy implements Validatable {
     public abstract void execute(StockData data);
 
     public abstract String getName();
-
-//    public static abstract String[] validateData(Map<String, Object> formData);
 }

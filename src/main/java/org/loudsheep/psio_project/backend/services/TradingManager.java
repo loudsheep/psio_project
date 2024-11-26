@@ -4,10 +4,8 @@ import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.observers.StockDataObserver;
 import org.loudsheep.psio_project.backend.strategies.SimpleUpAndDownStrategy;
 import org.loudsheep.psio_project.backend.strategies.Strategy;
-import org.loudsheep.psio_project.backend.strategies.Validatable;
+import org.loudsheep.psio_project.backend.strategies.TradingStrategy;
 
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 public class TradingManager implements StockDataObserver {
@@ -15,7 +13,7 @@ public class TradingManager implements StockDataObserver {
 
     private final StockService stockService;
     private StockData stockData;
-    private Strategy strategyInstance;
+    private TradingStrategy strategyInstance;
 
     private TradingManager() {
         this.stockService = new StockService();
@@ -25,6 +23,10 @@ public class TradingManager implements StockDataObserver {
     public void setStockData(String symbol, long startTime, long endTime) {
         // use StockService to fetch data (async)
         new Thread(() -> stockService.getStockData(symbol, startTime, endTime)).start();
+    }
+
+    public StockData getStockData() {
+        return this.stockData;
     }
 
     public String[] setStrategy(String strategyName, Map<String, Object> params) {
@@ -40,6 +42,10 @@ public class TradingManager implements StockDataObserver {
         }
     }
 
+    public TradingStrategy getStrategyInstance() {
+        return this.strategyInstance;
+    }
+
     public void addStockDataObserver(StockDataObserver observer) {
         this.stockService.addObserver(observer);
     }
@@ -49,7 +55,7 @@ public class TradingManager implements StockDataObserver {
     }
 
     public boolean isReadyToExecute() {
-        if (this.strategyInstance == null) return false;
+        if (this.strategyInstance == null || !this.strategyInstance.isReadyToExecute()) return false;
         if (this.stockData == null) return false;
 
         return true;
