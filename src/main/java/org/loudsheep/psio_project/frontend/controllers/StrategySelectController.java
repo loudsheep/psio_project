@@ -15,6 +15,7 @@ import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.observers.StockDataObserver;
 import org.loudsheep.psio_project.backend.services.TradingManager;
+import org.loudsheep.psio_project.frontend.SceneManager;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
@@ -111,6 +112,8 @@ public class StrategySelectController implements StockDataObserver {
         if (!TradingManager.getInstance().isReadyToExecute()) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Not enough data to execute the strategy", ButtonType.OK);
             alert.showAndWait();
+        } else {
+            SceneManager.switchScene("views/strategy-execution-view.fxml", "Execute Strategy");
         }
     }
 }
