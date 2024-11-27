@@ -61,6 +61,14 @@ public class TradingManager implements StockDataObserver {
         return true;
     }
 
+    public void execute() {
+        if (!this.isReadyToExecute()) return;
+
+        new Thread(() -> {
+            this.strategyInstance.execute(this.stockData);
+        }).start();
+    }
+
     @Override
     public void onDataChanged(StockData data) {
         this.stockData = data;

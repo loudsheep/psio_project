@@ -3,6 +3,7 @@ package org.loudsheep.psio_project.backend.strategies;
 import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.models.StrategyResult;
+import org.loudsheep.psio_project.backend.observers.StrategyResultObserver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +20,7 @@ public class SimpleUpAndDownStrategy implements TradingStrategy {
     public SimpleUpAndDownStrategy(double budget, int daysBackToCheck) {
         this.budget = budget;
         this.daysBackToCheck = daysBackToCheck;
+        this.result = new StrategyResult(budget);
 
         System.out.println("NEW SimpleUpAndDownStrategy created");
     }
@@ -63,6 +65,16 @@ public class SimpleUpAndDownStrategy implements TradingStrategy {
         if (this.budget <= 0) return false;
         if (this.daysBackToCheck <= 0) return false;
         return true;
+    }
+
+    @Override
+    public void addStrategyResultObserver(StrategyResultObserver observer) {
+        this.result.addObserver(observer);
+    }
+
+    @Override
+    public void removeStrategyResultObserver(StrategyResultObserver observer) {
+        this.result.removeObserver(observer);
     }
 
     @Override

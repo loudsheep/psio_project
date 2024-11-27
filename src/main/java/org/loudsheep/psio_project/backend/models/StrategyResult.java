@@ -23,6 +23,7 @@ public class StrategyResult {
 
     public boolean addTransaction(int volume, double price, long timestamp) {
         if (!this.canAddTransaction(volume * price)) return false;
+        if (volume == 0) return false;
 
         Transaction newTransaction = new Transaction(volume, price, timestamp);
         this.transactions.add(newTransaction);

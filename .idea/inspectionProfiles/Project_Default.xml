@@ -6,15 +6,21 @@
       <option name="ignoredModules">
         <list>
           <option value="psio_project" />
+          <option value="psio_project" />
+          <option value="psio_project" />
         </list>
       </option>
       <option name="ignoredPackages">
         <list>
           <option value="com.fasterxml.jackson.core:jackson-databind:2.12.6.1" />
+          <option value="ch.qos.logback:logback-classic:1.3.9" />
+          <option value="ch.qos.logback:logback-core:1.3.9" />
         </list>
       </option>
       <option name="ignoredReasons">
         <list>
+          <option value="Not exploitable" />
+          <option value="Not exploitable" />
           <option value="Not exploitable" />
         </list>
       </option>
