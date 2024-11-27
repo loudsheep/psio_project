@@ -8,6 +8,10 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
+import javafx.scene.paint.Color;
+import javafx.scene.shape.Circle;
+import org.loudsheep.psio_project.App;
 import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.models.StrategyResult;
@@ -17,6 +21,7 @@ import org.loudsheep.psio_project.backend.services.TradingManager;
 import org.loudsheep.psio_project.backend.strategies.TradingStrategy;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class StrategyExecutionController implements StrategyResultObserver {
     public Label startegyNameLabel;
@@ -56,50 +61,51 @@ public class StrategyExecutionController implements StrategyResultObserver {
         // Axes
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Timestamp");
+        xAxis.setTickLabelsVisible(false);
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Price");
 
         // LineChart
         LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
-        lineChart.setTitle("Multi Dataset Chart");
+        lineChart.setTitle("Trading Chart");
         lineChart.setVerticalZeroLineVisible(false);
         lineChart.setHorizontalZeroLineVisible(false);
         lineChart.setAnimated(false);
+//        lineChart.setCreateSymbols(true);
+
+        lineChart.getStylesheets().add(App.class.getResource("styles/chart-styles.css").toExternalForm());
+
 
         // Dataset 1 (Line chart)
         XYChart.Series<String, Number> series1 = new XYChart.Series<>();
-        series1.setName("Line Chart Data");
+        series1.setName("Stock Price");
 
         for (DayStockData day : stockData.getDailyData()) {
             series1.getData().add(new XYChart.Data<>(day.getTimestamp() + "", day.getClose()));
         }
-//        series1.getData().add(new XYChart.Data<>(1, 100));
-//        series1.getData().add(new XYChart.Data<>(2, 200));
-//        series1.getData().add(new XYChart.Data<>(3, 150));
+
+        for (XYChart.Data<String, Number> data : series1.getData()) {
+            Circle symbol = new Circle(1); // Set the radius of the circle (size)
+            symbol.setFill(Color.BLUE); // Set the color of the symbol
+            data.setNode(symbol); // Set the custom node as the symbol
+        }
+
 
         // Dataset 2 (Green points)
         series2 = new XYChart.Series<>();
-        series2.setName("Green Points");
-//        series2.getData().add(new XYChart.Data<>(1, 120));
-//        series2.getData().add(new XYChart.Data<>(2, 220));
-//        series2.getData().add(new XYChart.Data<>(3, 180));
+        series2.setName("Buy transactions");
 
         // Dataset 3 (Red points)
         series3 = new XYChart.Series<>();
-        series3.setName("Red Points");
-//        series3.getData().add(new XYChart.Data<>(1, 90));
-//        series3.getData().add(new XYChart.Data<>(2, 190));
-//        series3.getData().add(new XYChart.Data<>(3, 140));
+        series3.setName("Sell transactions");
 
         // Add series to chart
         lineChart.getData().addAll(series1, series2, series3);
 
-        // Style series2 and series3 to show only points
-        series2.getNode().setStyle("-fx-stroke: transparent;"); // No connecting lines
+        series2.getNode().setStyle("-fx-stroke: transparent;");
+        series3.getNode().setStyle("-fx-stroke: transparent;");
         series2.getData().forEach(data ->
                 data.getNode().setStyle("-fx-background-color: green, white; -fx-background-radius: 5px;"));
-
-        series3.getNode().setStyle("-fx-stroke: transparent;"); // No connecting lines
         series3.getData().forEach(data ->
                 data.getNode().setStyle("-fx-background-color: red, white; -fx-background-radius: 5px;"));
 
@@ -113,14 +119,31 @@ public class StrategyExecutionController implements StrategyResultObserver {
 
     @Override
     public void onTransactionAdd(Transaction transaction) {
-        System.out.println("ADDDD " +  transaction);
         Platform.runLater(() -> {
-            XYChart.Series<String, Number> targetSeries = transaction.volume() < 0 ? series2 : series3;
-            targetSeries.getData().add(new XYChart.Data<>(transaction.timestamp() + "", transaction.price()));
+            boolean isBuy = transaction.volume() < 0;
+
+            if (isBuy) {
+                XYChart.Data<String, Number> data = new XYChart.Data<>(transaction.timestamp() + "", transaction.price());
+                Circle symbol = new Circle(5); // Set the radius of the circle (size)
+                symbol.setFill(Color.LIGHTGREEN); // Set the color of the symbol
+                data.setNode(symbol);
+
+                this.series2.getData().add(data);
+            } else {
+                XYChart.Data<String, Number> data = new XYChart.Data<>(transaction.timestamp() + "", transaction.price());
+                Circle symbol = new Circle(5); // Set the radius of the circle (size)
+                symbol.setFill(Color.RED); // Set the color of the symbol
+                data.setNode(symbol);
+
+                this.series3.getData().add(data);
+            }
+
         });
     }
 
     public void handleTestButtonClick(ActionEvent actionEvent) {
+        this.series2.getData().clear();
+        this.series3.getData().clear();
         TradingManager.getInstance().execute();
     }
 }

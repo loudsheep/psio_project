@@ -1,0 +1,104 @@
+package org.loudsheep.psio_project.backend.strategies;
+
+import org.loudsheep.psio_project.backend.models.DayStockData;
+import org.loudsheep.psio_project.backend.models.StockData;
+import org.loudsheep.psio_project.backend.models.StrategyResult;
+import org.loudsheep.psio_project.backend.observers.StrategyResultObserver;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+public class RandomStrategy implements TradingStrategy {
+    private static final String name = "Random Strategy";
+    private static final String description = "Random decisions";
+
+    private final double budget;
+    private final StrategyResult result;
+
+    public RandomStrategy(double budget) {
+        this.budget = budget;
+        this.result = new StrategyResult(budget);
+
+        System.out.println("NEW RandomStrategy created");
+    }
+
+    @Override
+    public StrategyResult execute(StockData data) {
+        this.result.resetState();
+
+        for (int i = 0; i < data.getDailyData().size(); i++) {
+            DayStockData dayData = data.getDailyData().get(i);
+            double price = dayData.getOpen();
+
+            double rand = Math.random();
+            // 10% -> buy Transaction
+            // 10% -> sell Transaction
+            // 80% -> no action at all
+
+            if (rand < 0.1) {
+                int maxToBuy = this.result.maxStockToBuy(price);
+                int randomBuyAmount = (int) Math.floor(Math.random() * maxToBuy);
+
+                this.result.buyStock(randomBuyAmount, price, dayData.getTimestamp());
+            } else if (rand < 0.2) {
+                int randomToSell = (int) Math.floor(this.result.getStockOwned() * Math.random());
+
+                this.result.sellStock(randomToSell, price, dayData.getTimestamp());
+            }
+
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException _) {
+            }
+        }
+
+        this.result.sellAllStock(data.getDailyData().getLast().getClose(), data.getLastDataPointTimestamp());
+
+        System.out.println("END OF STRATEGY");
+        System.out.println("Transactions: " + this.result.getNumberOfTransactions());
+        System.out.println("ROI: " + this.result.getROI());
+
+        return this.result;
+    }
+
+    @Override
+    public boolean isReadyToExecute() {
+        if (this.budget <= 0) return false;
+        return true;
+    }
+
+    @Override
+    public void addStrategyResultObserver(StrategyResultObserver observer) {
+        this.result.addObserver(observer);
+    }
+
+    @Override
+    public void removeStrategyResultObserver(StrategyResultObserver observer) {
+        this.result.removeObserver(observer);
+    }
+
+    @Override
+    public String getDescription() {
+        return RandomStrategy.description;
+    }
+
+    @Override
+    public String getName() {
+        return RandomStrategy.name;
+    }
+
+    public static String[] validateData(Map<String, Object> formData) {
+        List<String> errors = new ArrayList<>();
+
+        if (!formData.containsKey("budget") || !(formData.get("budget") instanceof Double)) {
+            errors.add("Budget is required and must be a number value.");
+        }
+
+        return errors.toArray(new String[0]);
+    }
+
+    public static RandomStrategy create(Map<String, Object> formData) {
+        return new RandomStrategy((Double) formData.get("budget"));
+    }
+}

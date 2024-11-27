@@ -15,6 +15,7 @@ public class StrategyResult {
     public StrategyResult(double initialBudget) {
         this.initialBudget = Math.max(initialBudget, 0);
         this.currentBudget = this.initialBudget;
+        this.stockOwned = 0;
     }
 
     public boolean canAddTransaction(double value) {
@@ -78,6 +79,10 @@ public class StrategyResult {
         return currentBudget;
     }
 
+    public int getStockOwned() {
+        return stockOwned;
+    }
+
     public void setCurrentBudget(double currentBudget) {
         this.currentBudget = currentBudget;
     }
@@ -94,6 +99,12 @@ public class StrategyResult {
         for (StrategyResultObserver o : this.observers) {
             o.onTransactionAdd(transaction);
         }
+    }
+
+    public void resetState() {
+        this.currentBudget = this.initialBudget;
+        this.transactions.clear();
+        this.stockOwned = 0;
     }
 
     @Override

@@ -33,6 +33,7 @@ public class StrategySelectController implements StockDataObserver {
     public DatePicker endDateField;
     public Label errorLabel;
     public LineChart lineChart;
+    public MenuItem randomStrategyButton;
 
     // Handles getting stock data
     public void initialize() {
@@ -45,6 +46,11 @@ public class StrategySelectController implements StockDataObserver {
     private void handleSimpleStrategy() {
         loadStrategyForm("views/forms/simple-strategy-form.fxml", Map.of());
         strategyMenuButton.setText(simpleUDStrategyButton.getText());
+    }
+
+    public void handleRandomStrategy() {
+        loadStrategyForm("views/forms/random-strategy-form.fxml", Map.of());
+        strategyMenuButton.setText(randomStrategyButton.getText());
     }
 
     private void loadStrategyForm(String fxmlPath, Map<String, Object> initParams) {

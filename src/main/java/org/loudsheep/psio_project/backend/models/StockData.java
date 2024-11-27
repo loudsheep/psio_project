@@ -22,6 +22,14 @@ public class StockData {
         return 0;
     }
 
+    public DayStockData getFirstDataPoint() {
+        return this.dailyData.getFirst();
+    }
+
+    public DayStockData getLastDataPoint() {
+        return this.dailyData.getLast();
+    }
+
     // Getters
     public String getSymbol() { return symbol; }
     public List<DayStockData> getDailyData() { return dailyData; }

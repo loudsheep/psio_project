@@ -15,7 +15,7 @@ public class SimpleUpAndDownStrategy implements TradingStrategy {
 
     private final double budget;
     private final int daysBackToCheck;
-    private StrategyResult result;
+    private final StrategyResult result;
 
     public SimpleUpAndDownStrategy(double budget, int daysBackToCheck) {
         this.budget = budget;
@@ -28,7 +28,7 @@ public class SimpleUpAndDownStrategy implements TradingStrategy {
     private int getLastDaysTrend(StockData data, int currentDayIdx, int daysBack) {
         int trend = 0;
         DayStockData currentData = data.getDailyData().get(currentDayIdx);
-        for (int i = currentDayIdx; i >= 0; i--) {
+        for (int i = currentDayIdx; i >= Math.max(0, currentDayIdx - daysBack); i--) {
             DayStockData dayData = data.getDailyData().get(i);
 
             if (dayData.getOpen() == currentData.getOpen()) trend = 0;
@@ -39,6 +39,9 @@ public class SimpleUpAndDownStrategy implements TradingStrategy {
 
     @Override
     public StrategyResult execute(StockData data) {
+        this.result.resetState();
+
+        System.out.println("EXECUTING THE STRATEGY");
         for (int i = 0; i < data.getDailyData().size(); i++) {
             DayStockData dayData = data.getDailyData().get(i);
             double price = dayData.getOpen();
@@ -56,6 +59,12 @@ public class SimpleUpAndDownStrategy implements TradingStrategy {
             } catch (InterruptedException _) {
             }
         }
+
+        this.result.sellAllStock(data.getDailyData().getLast().getClose(), data.getLastDataPointTimestamp());
+
+        System.out.println("END OF STRATEGY");
+        System.out.println("Transactions: " + this.result.getNumberOfTransactions() );
+        System.out.println("ROI: " + this.result.getROI() );
 
         return this.result;
     }

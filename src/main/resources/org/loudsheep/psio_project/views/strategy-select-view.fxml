@@ -10,6 +10,7 @@
         <MenuButton fx:id="strategyMenuButton" layoutX="13.0" layoutY="14.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="168.0" text="Select strategy">
             <items>
                 <MenuItem fx:id="simpleUDStrategyButton" mnemonicParsing="false" onAction="#handleSimpleStrategy" text="Simple Up&amp;Down" />
+            <MenuItem fx:id="randomStrategyButton" mnemonicParsing="false" onAction="#handleRandomStrategy" text="Random Strategy" />
             </items>
         </MenuButton>
 

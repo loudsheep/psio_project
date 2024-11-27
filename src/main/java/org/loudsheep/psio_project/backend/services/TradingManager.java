@@ -2,6 +2,7 @@ package org.loudsheep.psio_project.backend.services;
 
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.observers.StockDataObserver;
+import org.loudsheep.psio_project.backend.strategies.RandomStrategy;
 import org.loudsheep.psio_project.backend.strategies.SimpleUpAndDownStrategy;
 import org.loudsheep.psio_project.backend.strategies.Strategy;
 import org.loudsheep.psio_project.backend.strategies.TradingStrategy;
@@ -32,10 +33,16 @@ public class TradingManager implements StockDataObserver {
     public String[] setStrategy(String strategyName, Map<String, Object> params) {
         switch (strategyName) {
             case "SimpleUpAndDown":
-                String[] errors = SimpleUpAndDownStrategy.validateData(params);
-                if (errors.length > 0) return errors;
+                String[] errors1 = SimpleUpAndDownStrategy.validateData(params);
+                if (errors1.length > 0) return errors1;
 
                 this.strategyInstance = SimpleUpAndDownStrategy.create(params);
+                return new String[0];
+            case "Random":
+                String[] errors2 = RandomStrategy.validateData(params);
+                if (errors2.length > 0) return errors2;
+
+                this.strategyInstance = RandomStrategy.create(params);
                 return new String[0];
             default:
                 throw new IllegalArgumentException("Unknown strategy: " + strategyName);
