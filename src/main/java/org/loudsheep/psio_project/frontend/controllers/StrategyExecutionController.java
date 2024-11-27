@@ -38,15 +38,15 @@ public class StrategyExecutionController implements StrategyResultObserver {
         StockData data = TradingManager.getInstance().getStockData();
         TradingStrategy strategy = TradingManager.getInstance().getStrategyInstance();
 
-        this.startegyNameLabel.setText("Strategy: " + strategy.getName());
-        this.strategyDescriptionLabel.setText("Description: " + strategy.getDescription());
+        this.startegyNameLabel.setText(strategy.getName());
+        this.strategyDescriptionLabel.setText(strategy.getDescription());
 
-        this.stockSymbolLabel.setText("Stock symbol: " + data.getSymbol().toUpperCase());
-        this.stockDataPointsLabel.setText("Total data points: " + data.getDailyData().size());
+        this.stockSymbolLabel.setText(data.getSymbol().toUpperCase());
+        this.stockDataPointsLabel.setText(data.getDailyData().size() + "");
 
         Date start = new Date(data.getFirstDataPointTimestamp() * 1000);
         Date end = new Date(data.getLastDataPointTimestamp() * 1000);
-        this.stockDataRangeLabel.setText("Date range: " + start + " - " + end);
+        this.stockDataRangeLabel.setText(start + " - " + end);
 
         LineChart<String, Number> chart = this.createChart(data);
         chart.prefWidthProperty().bind(this.chartPane.widthProperty());
@@ -60,20 +60,19 @@ public class StrategyExecutionController implements StrategyResultObserver {
     private LineChart<String, Number> createChart(StockData stockData) {
         // Axes
         CategoryAxis xAxis = new CategoryAxis();
-        xAxis.setLabel("Timestamp");
+        xAxis.setLabel("Time");
         xAxis.setTickLabelsVisible(false);
+
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Price");
+        yAxis.setForceZeroInRange(false);
 
         // LineChart
         LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle("Trading Chart");
-        lineChart.setVerticalZeroLineVisible(false);
-        lineChart.setHorizontalZeroLineVisible(false);
         lineChart.setAnimated(false);
-//        lineChart.setCreateSymbols(true);
-
         lineChart.getStylesheets().add(App.class.getResource("styles/chart-styles.css").toExternalForm());
+        lineChart.setLegendVisible(false);
 
 
         // Dataset 1 (Line chart)
