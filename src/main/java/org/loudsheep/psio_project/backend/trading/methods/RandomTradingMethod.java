@@ -1,22 +1,24 @@
-package org.loudsheep.psio_project.backend.strategies;
+package org.loudsheep.psio_project.backend.trading.methods;
 
 import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.models.StrategyResult;
 import org.loudsheep.psio_project.backend.observers.StrategyResultObserver;
+import org.loudsheep.psio_project.backend.trading.TradingMethod;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class RandomStrategy implements TradingStrategy {
+public class RandomTradingMethod implements TradingMethod {
     private static final String name = "Random Strategy";
     private static final String description = "Random decisions";
 
     private final double budget;
     private final StrategyResult result;
+    private boolean stopExecution = false;
 
-    public RandomStrategy(double budget) {
+    public RandomTradingMethod(double budget) {
         this.budget = budget;
         this.result = new StrategyResult(budget);
 
@@ -26,6 +28,7 @@ public class RandomStrategy implements TradingStrategy {
     @Override
     public StrategyResult execute(StockData data) {
         this.result.resetState();
+        this.stopExecution = false;
 
         for (int i = 0; i < data.getDailyData().size(); i++) {
             DayStockData dayData = data.getDailyData().get(i);
@@ -51,6 +54,8 @@ public class RandomStrategy implements TradingStrategy {
                 Thread.sleep(10);
             } catch (InterruptedException _) {
             }
+
+            if (this.stopExecution) break;
         }
 
         this.result.sellAllStock(data.getDailyData().getLast().getClose(), data.getLastDataPointTimestamp());
@@ -69,6 +74,11 @@ public class RandomStrategy implements TradingStrategy {
     }
 
     @Override
+    public void stopExecution() {
+        this.stopExecution = true;
+    }
+
+    @Override
     public void addStrategyResultObserver(StrategyResultObserver observer) {
         this.result.addObserver(observer);
     }
@@ -80,12 +90,12 @@ public class RandomStrategy implements TradingStrategy {
 
     @Override
     public String getDescription() {
-        return RandomStrategy.description;
+        return RandomTradingMethod.description;
     }
 
     @Override
     public String getName() {
-        return RandomStrategy.name;
+        return RandomTradingMethod.name;
     }
 
     public static String[] validateData(Map<String, Object> formData) {
@@ -98,7 +108,7 @@ public class RandomStrategy implements TradingStrategy {
         return errors.toArray(new String[0]);
     }
 
-    public static RandomStrategy create(Map<String, Object> formData) {
-        return new RandomStrategy((Double) formData.get("budget"));
+    public static RandomTradingMethod create(Map<String, Object> formData) {
+        return new RandomTradingMethod((Double) formData.get("budget"));
     }
 }

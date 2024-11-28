@@ -80,5 +80,6 @@
       </Pane>
       <Pane fx:id="chartPane" layoutX="12.0" layoutY="159.0" prefHeight="377.0" prefWidth="756.0" />
       <Button fx:id="testButton" layoutX="517.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleTestButtonClick" prefHeight="66.0" prefWidth="74.0" text="Execute" />
+      <Button fx:id="stopTradingButton" layoutX="601.0" layoutY="35.0" mnemonicParsing="false" onAction="#handleStopTradingButton" text="Stop" />
    </children>
 </AnchorPane>

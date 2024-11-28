@@ -1,23 +1,25 @@
-package org.loudsheep.psio_project.backend.strategies;
+package org.loudsheep.psio_project.backend.trading.methods;
 
 import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.models.StrategyResult;
 import org.loudsheep.psio_project.backend.observers.StrategyResultObserver;
+import org.loudsheep.psio_project.backend.trading.TradingMethod;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SimpleUpAndDownStrategy implements TradingStrategy {
+public class SimpleUpAndDownTradingMethod implements TradingMethod {
     private static final String name = "SimpleUpAndDown Strategy";
     private static final String description = "Simple strategy that sells when downward trend, and buys when upward";
+    private boolean stopExecution = false;
 
     private final double budget;
     private final int daysBackToCheck;
     private final StrategyResult result;
 
-    public SimpleUpAndDownStrategy(double budget, int daysBackToCheck) {
+    public SimpleUpAndDownTradingMethod(double budget, int daysBackToCheck) {
         this.budget = budget;
         this.daysBackToCheck = daysBackToCheck;
         this.result = new StrategyResult(budget);
@@ -40,6 +42,7 @@ public class SimpleUpAndDownStrategy implements TradingStrategy {
     @Override
     public StrategyResult execute(StockData data) {
         this.result.resetState();
+        this.stopExecution = false;
 
         System.out.println("EXECUTING THE STRATEGY");
         for (int i = 0; i < data.getDailyData().size(); i++) {
@@ -58,6 +61,8 @@ public class SimpleUpAndDownStrategy implements TradingStrategy {
                 Thread.sleep(10);
             } catch (InterruptedException _) {
             }
+
+            if (this.stopExecution) break;
         }
 
         this.result.sellAllStock(data.getDailyData().getLast().getClose(), data.getLastDataPointTimestamp());
@@ -77,6 +82,11 @@ public class SimpleUpAndDownStrategy implements TradingStrategy {
     }
 
     @Override
+    public void stopExecution() {
+        this.stopExecution = true;
+    }
+
+    @Override
     public void addStrategyResultObserver(StrategyResultObserver observer) {
         this.result.addObserver(observer);
     }
@@ -88,12 +98,12 @@ public class SimpleUpAndDownStrategy implements TradingStrategy {
 
     @Override
     public String getDescription() {
-        return SimpleUpAndDownStrategy.description;
+        return SimpleUpAndDownTradingMethod.description;
     }
 
     @Override
     public String getName() {
-        return SimpleUpAndDownStrategy.name;
+        return SimpleUpAndDownTradingMethod.name;
     }
 
     public static String[] validateData(Map<String, Object> formData) {
@@ -117,7 +127,7 @@ public class SimpleUpAndDownStrategy implements TradingStrategy {
         return errors.toArray(new String[0]);
     }
 
-    public static SimpleUpAndDownStrategy create(Map<String, Object> formData) {
-        return new SimpleUpAndDownStrategy((Double) formData.get("budget"), (Integer) formData.get("daysBackToCheck"));
+    public static SimpleUpAndDownTradingMethod create(Map<String, Object> formData) {
+        return new SimpleUpAndDownTradingMethod((Double) formData.get("budget"), (Integer) formData.get("daysBackToCheck"));
     }
 }

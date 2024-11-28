@@ -8,7 +8,6 @@ import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 import org.loudsheep.psio_project.App;
@@ -18,10 +17,9 @@ import org.loudsheep.psio_project.backend.models.StrategyResult;
 import org.loudsheep.psio_project.backend.models.Transaction;
 import org.loudsheep.psio_project.backend.observers.StrategyResultObserver;
 import org.loudsheep.psio_project.backend.services.TradingManager;
-import org.loudsheep.psio_project.backend.strategies.TradingStrategy;
+import org.loudsheep.psio_project.backend.trading.TradingMethod;
 
 import java.util.Date;
-import java.util.Objects;
 
 public class StrategyExecutionController implements StrategyResultObserver {
     public Label startegyNameLabel;
@@ -36,7 +34,7 @@ public class StrategyExecutionController implements StrategyResultObserver {
 
     public void initialize() {
         StockData data = TradingManager.getInstance().getStockData();
-        TradingStrategy strategy = TradingManager.getInstance().getStrategyInstance();
+        TradingMethod strategy = TradingManager.getInstance().getStrategyInstance();
 
         this.startegyNameLabel.setText(strategy.getName());
         this.strategyDescriptionLabel.setText(strategy.getDescription());
@@ -144,5 +142,9 @@ public class StrategyExecutionController implements StrategyResultObserver {
         this.series2.getData().clear();
         this.series3.getData().clear();
         TradingManager.getInstance().execute();
+    }
+
+    public void handleStopTradingButton() {
+        TradingManager.getInstance().stopExecution();
     }
 }

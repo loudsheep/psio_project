@@ -1,4 +1,4 @@
-package org.loudsheep.psio_project.backend.strategies;
+package org.loudsheep.psio_project.backend.trading;
 
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.models.StrategyResult;
@@ -6,11 +6,12 @@ import org.loudsheep.psio_project.backend.observers.StrategyResultObserver;
 
 import java.util.Map;
 
-public interface TradingStrategy {
+public interface TradingMethod {
     String getDescription();
     String getName();
     StrategyResult execute(StockData data);
     boolean isReadyToExecute();
+    void stopExecution();
 
     void addStrategyResultObserver(StrategyResultObserver observer);
     void removeStrategyResultObserver(StrategyResultObserver observer);
@@ -19,7 +20,7 @@ public interface TradingStrategy {
         return new String[]{"Error validating - method not implemented"};
     }
 
-    static TradingStrategy create(Map<String, Object> formData) {
+    static TradingMethod create(Map<String, Object> formData) {
         return null;
     }
 }

@@ -1,4 +1,4 @@
-package org.loudsheep.psio_project.backend.strategies;
+package org.loudsheep.psio_project.backend.trading;
 
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.models.StrategyResult;

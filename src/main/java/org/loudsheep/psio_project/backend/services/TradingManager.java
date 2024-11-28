@@ -2,10 +2,9 @@ package org.loudsheep.psio_project.backend.services;
 
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.observers.StockDataObserver;
-import org.loudsheep.psio_project.backend.strategies.RandomStrategy;
-import org.loudsheep.psio_project.backend.strategies.SimpleUpAndDownStrategy;
-import org.loudsheep.psio_project.backend.strategies.Strategy;
-import org.loudsheep.psio_project.backend.strategies.TradingStrategy;
+import org.loudsheep.psio_project.backend.trading.methods.RandomTradingMethod;
+import org.loudsheep.psio_project.backend.trading.methods.SimpleUpAndDownTradingMethod;
+import org.loudsheep.psio_project.backend.trading.TradingMethod;
 
 import java.util.Map;
 
@@ -14,7 +13,7 @@ public class TradingManager implements StockDataObserver {
 
     private final StockService stockService;
     private StockData stockData;
-    private TradingStrategy strategyInstance;
+    private TradingMethod strategyInstance;
 
     private TradingManager() {
         this.stockService = new StockService();
@@ -33,23 +32,23 @@ public class TradingManager implements StockDataObserver {
     public String[] setStrategy(String strategyName, Map<String, Object> params) {
         switch (strategyName) {
             case "SimpleUpAndDown":
-                String[] errors1 = SimpleUpAndDownStrategy.validateData(params);
+                String[] errors1 = SimpleUpAndDownTradingMethod.validateData(params);
                 if (errors1.length > 0) return errors1;
 
-                this.strategyInstance = SimpleUpAndDownStrategy.create(params);
+                this.strategyInstance = SimpleUpAndDownTradingMethod.create(params);
                 return new String[0];
             case "Random":
-                String[] errors2 = RandomStrategy.validateData(params);
+                String[] errors2 = RandomTradingMethod.validateData(params);
                 if (errors2.length > 0) return errors2;
 
-                this.strategyInstance = RandomStrategy.create(params);
+                this.strategyInstance = RandomTradingMethod.create(params);
                 return new String[0];
             default:
                 throw new IllegalArgumentException("Unknown strategy: " + strategyName);
         }
     }
 
-    public TradingStrategy getStrategyInstance() {
+    public TradingMethod getStrategyInstance() {
         return this.strategyInstance;
     }
 
@@ -74,6 +73,10 @@ public class TradingManager implements StockDataObserver {
         new Thread(() -> {
             this.strategyInstance.execute(this.stockData);
         }).start();
+    }
+
+    public void stopExecution() {
+        this.strategyInstance.stopExecution();
     }
 
     @Override
