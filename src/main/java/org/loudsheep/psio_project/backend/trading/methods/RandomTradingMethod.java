@@ -97,18 +97,4 @@ public class RandomTradingMethod implements TradingMethod {
     public String getName() {
         return RandomTradingMethod.name;
     }
-
-    public static String[] validateData(Map<String, Object> formData) {
-        List<String> errors = new ArrayList<>();
-
-        if (!formData.containsKey("budget") || !(formData.get("budget") instanceof Double)) {
-            errors.add("Budget is required and must be a number value.");
-        }
-
-        return errors.toArray(new String[0]);
-    }
-
-    public static RandomTradingMethod create(Map<String, Object> formData) {
-        return new RandomTradingMethod((Double) formData.get("budget"));
-    }
 }

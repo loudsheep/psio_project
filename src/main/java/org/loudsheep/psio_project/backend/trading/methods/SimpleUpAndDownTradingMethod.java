@@ -105,29 +105,4 @@ public class SimpleUpAndDownTradingMethod implements TradingMethod {
     public String getName() {
         return SimpleUpAndDownTradingMethod.name;
     }
-
-    public static String[] validateData(Map<String, Object> formData) {
-        List<String> errors = new ArrayList<>();
-
-        System.out.println(formData);
-
-        if (!formData.containsKey("budget") || !(formData.get("budget") instanceof Double)) {
-            errors.add("Budget is required and must be a number value.");
-        }
-
-        if (!formData.containsKey("daysBackToCheck") || !(formData.get("daysBackToCheck") instanceof Integer)) {
-            errors.add("daysBackToCheck is required and must be an integer.");
-        } else {
-            int age = (int) formData.get("daysBackToCheck");
-            if (age <= 0) {
-                errors.add("daysBackToCheck must be non-negative.");
-            }
-        }
-
-        return errors.toArray(new String[0]);
-    }
-
-    public static SimpleUpAndDownTradingMethod create(Map<String, Object> formData) {
-        return new SimpleUpAndDownTradingMethod((Double) formData.get("budget"), (Integer) formData.get("daysBackToCheck"));
-    }
 }

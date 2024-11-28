@@ -2,9 +2,12 @@ package org.loudsheep.psio_project.backend.services;
 
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.observers.StockDataObserver;
+import org.loudsheep.psio_project.backend.trading.TradingMethodValidator;
 import org.loudsheep.psio_project.backend.trading.methods.RandomTradingMethod;
 import org.loudsheep.psio_project.backend.trading.methods.SimpleUpAndDownTradingMethod;
 import org.loudsheep.psio_project.backend.trading.TradingMethod;
+import org.loudsheep.psio_project.backend.trading.validators.RandomTradingMethodValidator;
+import org.loudsheep.psio_project.backend.trading.validators.SimpleUpAndDownTradingMethodValidator;
 
 import java.util.Map;
 
@@ -30,22 +33,17 @@ public class TradingManager implements StockDataObserver {
     }
 
     public String[] setStrategy(String strategyName, Map<String, Object> params) {
-        switch (strategyName) {
-            case "SimpleUpAndDown":
-                String[] errors1 = SimpleUpAndDownTradingMethod.validateData(params);
-                if (errors1.length > 0) return errors1;
+        TradingMethodValidator validator;
 
-                this.strategyInstance = SimpleUpAndDownTradingMethod.create(params);
-                return new String[0];
-            case "Random":
-                String[] errors2 = RandomTradingMethod.validateData(params);
-                if (errors2.length > 0) return errors2;
+        if (strategyName.equals("SimpleUpAndDown")) validator = new SimpleUpAndDownTradingMethodValidator();
+        else if (strategyName.equals("Random")) validator = new RandomTradingMethodValidator();
+        else return new String[]{"Unknown strategy name '" + strategyName + "'"};
 
-                this.strategyInstance = RandomTradingMethod.create(params);
-                return new String[0];
-            default:
-                throw new IllegalArgumentException("Unknown strategy: " + strategyName);
-        }
+        String[] errors = validator.validate(params);
+        if (errors.length > 0) return errors;
+
+        this.strategyInstance = validator.create(params);
+        return new String[0];
     }
 
     public TradingMethod getStrategyInstance() {

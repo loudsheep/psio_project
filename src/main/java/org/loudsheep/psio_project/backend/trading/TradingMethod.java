@@ -15,12 +15,4 @@ public interface TradingMethod {
 
     void addStrategyResultObserver(StrategyResultObserver observer);
     void removeStrategyResultObserver(StrategyResultObserver observer);
-
-    static String[] validateData(Map<String, Object> formData) {
-        return new String[]{"Error validating - method not implemented"};
-    }
-
-    static TradingMethod create(Map<String, Object> formData) {
-        return null;
-    }
 }
