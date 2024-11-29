@@ -17,8 +17,8 @@ import org.loudsheep.psio_project.backend.observers.StockDataObserver;
 import org.loudsheep.psio_project.backend.services.TradingManager;
 import org.loudsheep.psio_project.frontend.SceneManager;
 
-import java.time.LocalDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
+import java.util.Date;
 import java.util.Map;
 
 public class StrategySelectController implements StockDataObserver {
@@ -38,6 +38,16 @@ public class StrategySelectController implements StockDataObserver {
     // Handles getting stock data
     public void initialize() {
         TradingManager.getInstance().addStockDataObserver(this);
+        StockData data = TradingManager.getInstance().getStockData();
+        if (data != null) {
+            this.onDataChanged(data);
+            this.symbolField.setText(data.getSymbol().toUpperCase());
+
+
+            this.startDateField.setValue(Instant.ofEpochSecond(data.getFirstDataPointTimestamp()).atZone(ZoneId.systemDefault()).toLocalDate());
+            this.endDateField.setValue(Instant.ofEpochSecond(data.getLastDataPointTimestamp()).atZone(ZoneId.systemDefault()).toLocalDate());
+        }
+
         this.errorLabel.setText("");
     }
 

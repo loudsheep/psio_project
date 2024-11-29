@@ -79,7 +79,21 @@
          </padding>
       </Pane>
       <Pane fx:id="chartPane" layoutX="12.0" layoutY="159.0" prefHeight="377.0" prefWidth="756.0" />
-      <Button fx:id="testButton" layoutX="517.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleTestButtonClick" prefHeight="66.0" prefWidth="74.0" text="Execute" />
-      <Button fx:id="stopTradingButton" layoutX="601.0" layoutY="35.0" mnemonicParsing="false" onAction="#handleStopTradingButton" text="Stop" />
+      <Button fx:id="testButton" layoutX="517.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleTestButtonClick" prefHeight="66.0" prefWidth="70.0" style="-fx-background-color: lightgreen;" text="Execute">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Button>
+      <Button fx:id="stopTradingButton" layoutX="594.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleStopTradingButton" prefHeight="66.0" prefWidth="70.0" style="-fx-background-color: red;" text="Stop">
+         <font>
+            <Font name="System Bold" size="12.0" />
+         </font></Button>
+      <Button layoutX="671.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleBackToSelection" prefHeight="66.0" prefWidth="70.0" text="Back to Selection" textAlignment="CENTER" wrapText="true" />
+      <Pane layoutX="594.0" layoutY="87.0" prefHeight="66.0" prefWidth="176.0">
+         <children>
+            <Label fx:id="roiLabel" layoutX="7.0" layoutY="6.0" text="ROI: " />
+            <Label fx:id="transactionsLabel" layoutX="7.0" layoutY="25.0" text="No. of transactions: " />
+            <Label fx:id="stockIncreaseLabel" layoutX="6.0" layoutY="44.0" text="Stock value increase: " />
+         </children>
+      </Pane>
    </children>
 </AnchorPane>

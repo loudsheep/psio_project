@@ -55,7 +55,10 @@ public class RandomTradingMethod implements TradingMethod {
             } catch (InterruptedException _) {
             }
 
-            if (this.stopExecution) break;
+            if (this.stopExecution) {
+                this.result.sellAllStock(price, dayData.getTimestamp());
+                break;
+            }
         }
 
         this.result.sellAllStock(data.getDailyData().getLast().getClose(), data.getLastDataPointTimestamp());

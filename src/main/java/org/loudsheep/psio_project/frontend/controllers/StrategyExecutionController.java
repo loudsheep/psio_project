@@ -18,6 +18,7 @@ import org.loudsheep.psio_project.backend.models.Transaction;
 import org.loudsheep.psio_project.backend.observers.StrategyResultObserver;
 import org.loudsheep.psio_project.backend.services.TradingManager;
 import org.loudsheep.psio_project.backend.trading.TradingMethod;
+import org.loudsheep.psio_project.frontend.SceneManager;
 
 import java.util.Date;
 
@@ -28,13 +29,16 @@ public class StrategyExecutionController implements StrategyResultObserver {
     public Label stockDataRangeLabel;
     public Label stockDataPointsLabel;
     public Pane chartPane;
+    public Label roiLabel;
+    public Label transactionsLabel;
+    public Label stockIncreaseLabel;
 
     private XYChart.Series<String, Number> series2; // Green points
     private XYChart.Series<String, Number> series3;
 
     public void initialize() {
         StockData data = TradingManager.getInstance().getStockData();
-        TradingMethod strategy = TradingManager.getInstance().getStrategyInstance();
+        TradingMethod strategy = TradingManager.getInstance().getTradingMethodInstance();
 
         this.startegyNameLabel.setText(strategy.getName());
         this.strategyDescriptionLabel.setText(strategy.getDescription());
@@ -46,13 +50,16 @@ public class StrategyExecutionController implements StrategyResultObserver {
         Date end = new Date(data.getLastDataPointTimestamp() * 1000);
         this.stockDataRangeLabel.setText(start + " - " + end);
 
+        double increase = (double)Math.round((data.getLastDataPoint().getClose() - data.getFirstDataPoint().getClose()) / data.getFirstDataPoint().getClose() * 100 * 100)/100;
+        this.stockIncreaseLabel.setText("Stock value: " + increase + "%");
+
         LineChart<String, Number> chart = this.createChart(data);
         chart.prefWidthProperty().bind(this.chartPane.widthProperty());
         chart.prefHeightProperty().bind(this.chartPane.heightProperty());
 
         this.chartPane.getChildren().add(chart);
 
-        TradingManager.getInstance().getStrategyInstance().addStrategyResultObserver(this);
+        TradingManager.getInstance().getTradingMethodInstance().addStrategyResultObserver(this);
     }
 
     private LineChart<String, Number> createChart(StockData stockData) {
@@ -111,7 +118,12 @@ public class StrategyExecutionController implements StrategyResultObserver {
 
     @Override
     public void onStrategyResultUpdate(StrategyResult result) {
+        double roi = (double) Math.round(result.getROI() * 100 * 1000) / 1000;
 
+        Platform.runLater(() -> {
+            this.roiLabel.setText("ROI: " + roi + "%");
+            this.transactionsLabel.setText("No. of transactions: " + result.getNumberOfTransactions());
+        });
     }
 
     @Override
@@ -146,5 +158,11 @@ public class StrategyExecutionController implements StrategyResultObserver {
 
     public void handleStopTradingButton() {
         TradingManager.getInstance().stopExecution();
+    }
+
+    public void handleBackToSelection() {
+        TradingManager.getInstance().stopExecution();
+
+        SceneManager.switchScene("views/strategy-select-view.fxml", "Select Strategy");
     }
 }

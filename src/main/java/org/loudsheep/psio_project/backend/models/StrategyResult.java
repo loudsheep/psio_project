@@ -28,8 +28,10 @@ public class StrategyResult {
 
         Transaction newTransaction = new Transaction(volume, price, timestamp);
         this.transactions.add(newTransaction);
-        this.notifyObserversWithNewTransaction(newTransaction);
         this.currentBudget += volume * price;
+
+        this.notifyObserversWithNewTransaction(newTransaction);
+        this.notifyObserversOfObjectUpdate();
 
         return true;
     }
@@ -98,6 +100,12 @@ public class StrategyResult {
     private void notifyObserversWithNewTransaction(Transaction transaction) {
         for (StrategyResultObserver o : this.observers) {
             o.onTransactionAdd(transaction);
+        }
+    }
+
+    private void notifyObserversOfObjectUpdate() {
+        for (StrategyResultObserver o : this.observers) {
+            o.onStrategyResultUpdate(this);
         }
     }
 

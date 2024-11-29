@@ -3,8 +3,6 @@ package org.loudsheep.psio_project.backend.services;
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.observers.StockDataObserver;
 import org.loudsheep.psio_project.backend.trading.TradingMethodValidator;
-import org.loudsheep.psio_project.backend.trading.methods.RandomTradingMethod;
-import org.loudsheep.psio_project.backend.trading.methods.SimpleUpAndDownTradingMethod;
 import org.loudsheep.psio_project.backend.trading.TradingMethod;
 import org.loudsheep.psio_project.backend.trading.validators.RandomTradingMethodValidator;
 import org.loudsheep.psio_project.backend.trading.validators.SimpleUpAndDownTradingMethodValidator;
@@ -16,7 +14,7 @@ public class TradingManager implements StockDataObserver {
 
     private final StockService stockService;
     private StockData stockData;
-    private TradingMethod strategyInstance;
+    private TradingMethod tradingMethodInstance;
 
     private TradingManager() {
         this.stockService = new StockService();
@@ -42,12 +40,12 @@ public class TradingManager implements StockDataObserver {
         String[] errors = validator.validate(params);
         if (errors.length > 0) return errors;
 
-        this.strategyInstance = validator.create(params);
+        this.tradingMethodInstance = validator.create(params);
         return new String[0];
     }
 
-    public TradingMethod getStrategyInstance() {
-        return this.strategyInstance;
+    public TradingMethod getTradingMethodInstance() {
+        return this.tradingMethodInstance;
     }
 
     public void addStockDataObserver(StockDataObserver observer) {
@@ -59,7 +57,7 @@ public class TradingManager implements StockDataObserver {
     }
 
     public boolean isReadyToExecute() {
-        if (this.strategyInstance == null || !this.strategyInstance.isReadyToExecute()) return false;
+        if (this.tradingMethodInstance == null || !this.tradingMethodInstance.isReadyToExecute()) return false;
         if (this.stockData == null) return false;
 
         return true;
@@ -67,14 +65,14 @@ public class TradingManager implements StockDataObserver {
 
     public void execute() {
         if (!this.isReadyToExecute()) return;
+        this.tradingMethodInstance.stopExecution();
 
-        new Thread(() -> {
-            this.strategyInstance.execute(this.stockData);
-        }).start();
+        // Execute trading method async
+        new Thread(() -> this.tradingMethodInstance.execute(this.stockData)).start();
     }
 
     public void stopExecution() {
-        this.strategyInstance.stopExecution();
+        this.tradingMethodInstance.stopExecution();
     }
 
     @Override
