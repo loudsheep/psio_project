@@ -31,7 +31,7 @@ public class StrategyResult {
         this.currentBudget += volume * price;
 
         this.notifyObserversWithNewTransaction(newTransaction);
-        this.notifyObserversOfObjectUpdate();
+        this.notifyObserversWithObjectUpdate();
 
         return true;
     }
@@ -45,10 +45,10 @@ public class StrategyResult {
     }
 
     public boolean buyStock(int amount, double price, long timestamp) {
-        if (!hasEnoughMoneyToBuy(amount, price)) return false;
+        if (!hasEnoughMoneyToBuy(-amount, price)) return false;
 
         this.stockOwned += amount;
-        // negative price means buy
+        // negative amount means buy
         this.addTransaction(-amount, price, timestamp);
 
         return true;
@@ -58,7 +58,7 @@ public class StrategyResult {
         if (amount >= this.stockOwned) return false;
 
         this.stockOwned -= amount;
-        // positive price means sell
+        // positive amount means sell
         this.addTransaction(amount, price, timestamp);
 
         return true;
@@ -103,7 +103,7 @@ public class StrategyResult {
         }
     }
 
-    private void notifyObserversOfObjectUpdate() {
+    private void notifyObserversWithObjectUpdate() {
         for (StrategyResultObserver o : this.observers) {
             o.onStrategyResultUpdate(this);
         }

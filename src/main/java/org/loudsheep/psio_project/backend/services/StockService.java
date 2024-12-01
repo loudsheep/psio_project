@@ -43,10 +43,10 @@ public class StockService {
     }
 
     // Fetch and parse stock data for a given symbol
-    public void getStockData(String symbol, long startTime, long endTime){
-        String urlString = String.format(BASE_URL, symbol, startTime, endTime);
+    public void getStockData(String symbol, long startTime, long endTime) {
+        String urlString = String.format(BASE_URL, symbol.toUpperCase(), startTime, endTime);
         System.out.println(urlString);
-        String jsonResponse = null;
+        String jsonResponse;
         try {
             jsonResponse = fetchJsonData(urlString);
 
@@ -57,7 +57,6 @@ public class StockService {
             notifyObservers(stockData);
         } catch (IOException e) {
             this.notifyError(e.getMessage());
-//            throw new RuntimeException(e);
         }
     }
 
@@ -70,7 +69,7 @@ public class StockService {
         // Check the HTTP response code
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
-            throw new IOException("Bad request! Dates must not be in future!");
+            throw new IOException("Dates must not be in future!");
         } else if (responseCode == HttpURLConnection.HTTP_NOT_FOUND) {
             throw new IOException("Symbol not found");
         } else if (responseCode != HttpURLConnection.HTTP_OK) {
@@ -90,7 +89,7 @@ public class StockService {
     }
 
     // Parse JSON response to StockData (you'll add the actual parsing logic here)
-    private StockData parseStockData(String symbol, String jsonResponse) {
+    private StockData parseStockData(String symbol, String jsonResponse) throws IOException {
         List<DayStockData> dailyData = new ArrayList<>();
 
         // Example JSON parsing using JsonParser and manual processing (add your logic here)
@@ -99,6 +98,8 @@ public class StockService {
                 .get(0).getAsJsonObject();
 
         JsonObject quoteObject = resultArray.getAsJsonObject("indicators").getAsJsonArray("quote").get(0).getAsJsonObject();
+
+        if (quoteObject.isEmpty()) throw new IOException("Data for this symbol does not exist");
 
         for (int i = 0; i < resultArray.getAsJsonArray("timestamp").size(); i++) {
             long timestamp = resultArray.getAsJsonArray("timestamp").get(i).getAsLong();

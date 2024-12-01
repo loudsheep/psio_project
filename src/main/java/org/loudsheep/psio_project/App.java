@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.loudsheep.psio_project.backend.services.TradingManager;
 import org.loudsheep.psio_project.frontend.SceneManager;
 
 import java.io.IOException;
@@ -18,6 +19,12 @@ public class App extends Application {
         stage.setTitle("Stock Strategy Simulation");
         stage.setScene(scene);
         stage.show();
+    }
+
+    @Override
+    public void stop() throws Exception {
+        TradingManager.getInstance().stopExecution();
+        super.stop();
     }
 
     public static void main(String[] args) {
