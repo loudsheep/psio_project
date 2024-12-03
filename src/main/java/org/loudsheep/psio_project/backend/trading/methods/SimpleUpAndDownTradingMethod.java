@@ -108,4 +108,14 @@ public class SimpleUpAndDownTradingMethod implements TradingMethod {
     public String getName() {
         return SimpleUpAndDownTradingMethod.name;
     }
+
+    @Override
+    public Map<String, Object> getMethodParams() {
+        Map<String ,Object> result = new java.util.HashMap<>();
+
+        result.put("budget", budget);
+        result.put("daysBackToCheck", daysBackToCheck);
+
+        return result;
+    }
 }

@@ -100,4 +100,13 @@ public class RandomTradingMethod implements TradingMethod {
     public String getName() {
         return RandomTradingMethod.name;
     }
+
+    @Override
+    public Map<String, Object> getMethodParams() {
+        Map<String ,Object> result = new java.util.HashMap<>();
+
+        result.put("budget", budget);
+
+        return result;
+    }
 }

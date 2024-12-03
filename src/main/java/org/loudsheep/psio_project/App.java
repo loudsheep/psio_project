@@ -18,6 +18,7 @@ public class App extends Application {
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Stock Strategy Simulation");
         stage.setScene(scene);
+        stage.setResizable(false);
         stage.show();
     }
 

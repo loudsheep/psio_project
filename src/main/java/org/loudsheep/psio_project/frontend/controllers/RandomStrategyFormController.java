@@ -63,7 +63,6 @@ public class RandomStrategyFormController implements FormControllerInterface, Fo
         }
     }
 
-    int x= 0;
     @FXML
     private void handleSubmit() throws Exception {
         if (submitCallback != null) {

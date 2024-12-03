@@ -9,6 +9,8 @@ import java.util.Map;
 public interface TradingMethod {
     String getDescription();
     String getName();
+    Map<String, Object> getMethodParams();
+
     StrategyResult execute(StockData data);
     boolean isReadyToExecute();
     void stopExecution();

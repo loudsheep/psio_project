@@ -15,6 +15,7 @@ import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.observers.StockDataObserver;
 import org.loudsheep.psio_project.backend.services.TradingManager;
+import org.loudsheep.psio_project.backend.trading.TradingMethod;
 import org.loudsheep.psio_project.frontend.SceneManager;
 
 import java.time.*;
@@ -48,7 +49,27 @@ public class StrategySelectController implements StockDataObserver {
             this.endDateField.setValue(Instant.ofEpochSecond(data.getLastDataPointTimestamp()).atZone(ZoneId.systemDefault()).toLocalDate());
         }
 
+        showMethodParams();
+
         this.errorLabel.setText("");
+    }
+
+    private void showMethodParams() {
+        TradingMethod method = TradingManager.getInstance().getTradingMethodInstance();
+        if (method != null) {
+            this.strategyMenuButton.setText(method.getName());
+
+            Label tmp = new Label();
+            tmp.setWrapText(true);
+
+            String text = "";
+            for (Map.Entry<String, Object> set : method.getMethodParams().entrySet()) {
+                text += set.getKey() + ": " + set.getValue() + "\n";
+            }
+            tmp.setText(text);
+            parametersVBox.getChildren().clear();
+            parametersVBox.getChildren().add(tmp);
+        }
     }
 
     // Handles Simple Up & Down Strategy selection
@@ -86,7 +107,7 @@ public class StrategySelectController implements StockDataObserver {
     private void handleFormSubmit(Map<String, Object> formData) {
         // Handle the submitted form data
         System.out.println("Form submitted with data: " + formData);
-        parametersVBox.getChildren().clear();
+        showMethodParams();
     }
 
     public void handleStockData() {
