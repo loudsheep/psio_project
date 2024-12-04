@@ -115,6 +115,10 @@ public class StrategyResult {
         this.stockOwned = 0;
     }
 
+    public double getInitialBudget() {
+        return initialBudget;
+    }
+
     @Override
     public String toString() {
         return "StrategyResult{" +

@@ -23,7 +23,7 @@ import org.loudsheep.psio_project.frontend.SceneManager;
 import java.util.Date;
 
 public class StrategyExecutionController implements StrategyResultObserver {
-    public Label startegyNameLabel;
+    public Label strategyNameLabel;
     public Label strategyDescriptionLabel;
     public Label stockSymbolLabel;
     public Label stockDataRangeLabel;
@@ -32,6 +32,7 @@ public class StrategyExecutionController implements StrategyResultObserver {
     public Label roiLabel;
     public Label transactionsLabel;
     public Label stockIncreaseLabel;
+    public Label budgetIncreaseLabel;
 
     private XYChart.Series<String, Number> series2; // Green points
     private XYChart.Series<String, Number> series3;
@@ -40,7 +41,7 @@ public class StrategyExecutionController implements StrategyResultObserver {
         StockData data = TradingManager.getInstance().getStockData();
         TradingMethod strategy = TradingManager.getInstance().getTradingMethodInstance();
 
-        this.startegyNameLabel.setText(strategy.getName());
+        this.strategyNameLabel.setText(strategy.getName());
         this.strategyDescriptionLabel.setText(strategy.getDescription());
 
         this.stockSymbolLabel.setText(data.getSymbol().toUpperCase());
@@ -51,7 +52,7 @@ public class StrategyExecutionController implements StrategyResultObserver {
         this.stockDataRangeLabel.setText(start + " - " + end);
 
         double increase = (double)Math.round((data.getLastDataPoint().getClose() - data.getFirstDataPoint().getClose()) / data.getFirstDataPoint().getClose() * 100 * 100)/100;
-        this.stockIncreaseLabel.setText("Stock value: " + increase + "%");
+        this.stockIncreaseLabel.setText("Stock increase: " + increase + "%");
 
         LineChart<String, Number> chart = this.createChart(data);
         chart.prefWidthProperty().bind(this.chartPane.widthProperty());
@@ -119,10 +120,12 @@ public class StrategyExecutionController implements StrategyResultObserver {
     @Override
     public void onStrategyResultUpdate(StrategyResult result) {
         double roi = (double) Math.round(result.getROI() * 100 * 1000) / 1000;
+        double budgetIncrease = (double) Math.round((result.getCurrentBudget() - result.getInitialBudget()) / result.getInitialBudget() * 100 * 100) / 100;
 
         Platform.runLater(() -> {
             this.roiLabel.setText("ROI: " + roi + "%");
             this.transactionsLabel.setText("No. of transactions: " + result.getNumberOfTransactions());
+            this.budgetIncreaseLabel.setText("Budget increase: " + budgetIncrease + "%");
         });
     }
 
