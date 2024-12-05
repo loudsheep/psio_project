@@ -6,8 +6,6 @@ import org.loudsheep.psio_project.backend.models.StrategyResult;
 import org.loudsheep.psio_project.backend.observers.StrategyResultObserver;
 import org.loudsheep.psio_project.backend.trading.TradingMethod;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 public class SimpleUpAndDownTradingMethod implements TradingMethod {
@@ -40,7 +38,7 @@ public class SimpleUpAndDownTradingMethod implements TradingMethod {
     }
 
     @Override
-    public StrategyResult execute(StockData data) {
+    public void execute(StockData data) {
         this.result.resetState();
         this.stopExecution = false;
 
@@ -69,12 +67,6 @@ public class SimpleUpAndDownTradingMethod implements TradingMethod {
         }
 
         this.result.sellAllStock(data.getDailyData().getLast().getClose(), data.getLastDataPointTimestamp());
-
-        System.out.println("END OF STRATEGY");
-        System.out.println("Transactions: " + this.result.getNumberOfTransactions() );
-        System.out.println("ROI: " + this.result.getROI() );
-
-        return this.result;
     }
 
     @Override
@@ -110,8 +102,13 @@ public class SimpleUpAndDownTradingMethod implements TradingMethod {
     }
 
     @Override
+    public String getSignature() {
+        return "SimpleUpAndDown";
+    }
+
+    @Override
     public Map<String, Object> getMethodParams() {
-        Map<String ,Object> result = new java.util.HashMap<>();
+        Map<String, Object> result = new java.util.HashMap<>();
 
         result.put("budget", budget);
         result.put("daysBackToCheck", daysBackToCheck);

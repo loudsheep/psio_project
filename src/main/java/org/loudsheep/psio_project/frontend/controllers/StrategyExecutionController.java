@@ -6,7 +6,10 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
@@ -21,6 +24,7 @@ import org.loudsheep.psio_project.backend.trading.TradingMethod;
 import org.loudsheep.psio_project.frontend.SceneManager;
 
 import java.util.Date;
+import java.util.Optional;
 
 public class StrategyExecutionController implements StrategyResultObserver {
     public Label strategyNameLabel;
@@ -167,5 +171,23 @@ public class StrategyExecutionController implements StrategyResultObserver {
         TradingManager.getInstance().stopExecution();
 
         SceneManager.switchScene("views/strategy-select-view.fxml", "Select Strategy");
+    }
+
+    public void handleMethodSave() {
+        TextInputDialog dialog = new TextInputDialog("method");
+        dialog.setTitle("Enter name");
+        dialog.setHeaderText("Give your method a name");
+        dialog.setContentText("Please enter name:");
+
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(name -> {
+            if (TradingManager.getInstance().saveCurrentStrategy(name)){
+                Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Saved successfully", ButtonType.OK);
+                alert.showAndWait();
+            } else {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Could not save", ButtonType.OK);
+                alert.showAndWait();
+            }
+        });
     }
 }

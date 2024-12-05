@@ -1,7 +1,6 @@
 package org.loudsheep.psio_project.frontend.controllers;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -14,12 +13,13 @@ import org.loudsheep.psio_project.App;
 import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.observers.StockDataObserver;
+import org.loudsheep.psio_project.backend.services.SaveMethodService;
 import org.loudsheep.psio_project.backend.services.TradingManager;
 import org.loudsheep.psio_project.backend.trading.TradingMethod;
 import org.loudsheep.psio_project.frontend.SceneManager;
 
 import java.time.*;
-import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class StrategySelectController implements StockDataObserver {
@@ -35,6 +35,7 @@ public class StrategySelectController implements StockDataObserver {
     public Label errorLabel;
     public LineChart lineChart;
     public MenuItem randomStrategyButton;
+    public VBox savedVbox;
 
     // Handles getting stock data
     public void initialize() {
@@ -49,7 +50,8 @@ public class StrategySelectController implements StockDataObserver {
             this.endDateField.setValue(Instant.ofEpochSecond(data.getLastDataPointTimestamp()).atZone(ZoneId.systemDefault()).toLocalDate());
         }
 
-        showMethodParams();
+        this.showMethodParams();
+        this.showSavedMethods();
 
         this.errorLabel.setText("");
     }
@@ -72,14 +74,36 @@ public class StrategySelectController implements StockDataObserver {
         }
     }
 
+    private void showSavedMethods() {
+        List<Map<String, Object>> methods = SaveMethodService.getSavedTradingMethods();
+
+        this.savedVbox.getChildren().clear();
+        for (Map<String, Object> method: methods) {
+            VBox box = new VBox();
+
+//            Label header = new Label(method.get("name").toString());
+//            Label strategy = new Label(method.get("strategyName").toString());
+            Button loadBtn = new Button("Load");
+            String text = "";
+            for (Map.Entry<String, Object> set : method.entrySet()) {
+                text += set.getKey() + ": " + set.getValue() + "\n";
+            }
+
+            Label label = new Label(text);
+            box.getChildren().addAll(label, loadBtn);
+
+            this.savedVbox.getChildren().add(box);
+        }
+    }
+
     // Handles Simple Up & Down Strategy selection
     @FXML
-    private void handleSimpleStrategy() {
+    private void handleSimpleMethod() {
         loadStrategyForm("views/forms/simple-strategy-form.fxml", Map.of());
         strategyMenuButton.setText(simpleUDStrategyButton.getText());
     }
 
-    public void handleRandomStrategy() {
+    public void handleRandomMethod() {
         loadStrategyForm("views/forms/random-strategy-form.fxml", Map.of());
         strategyMenuButton.setText(randomStrategyButton.getText());
     }

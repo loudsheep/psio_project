@@ -69,10 +69,18 @@ public class TradingManager implements StockDataObserver {
 
         // Execute trading method async
         new Thread(() -> this.tradingMethodInstance.execute(this.stockData)).start();
+
+        System.out.println(SaveMethodService.getSavedTradingMethods());
     }
 
     public void stopExecution() {
-        this.tradingMethodInstance.stopExecution();
+        if (this.tradingMethodInstance != null) this.tradingMethodInstance.stopExecution();
+    }
+
+    public boolean saveCurrentStrategy(String name) {
+        if (this.tradingMethodInstance == null) return false;
+
+        return SaveMethodService.saveTradingMethodToFile(this.tradingMethodInstance, name);
     }
 
     @Override

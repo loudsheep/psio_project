@@ -87,7 +87,7 @@
          <font>
             <Font name="System Bold" size="12.0" />
          </font></Button>
-      <Button layoutX="671.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleBackToSelection" prefHeight="66.0" prefWidth="70.0" text="Back to Selection" textAlignment="CENTER" wrapText="true" />
+      <Button layoutX="671.0" layoutY="14.0" mnemonicParsing="false" onAction="#handleBackToSelection" prefHeight="43.0" prefWidth="98.0" text="Back to Selection" textAlignment="CENTER" wrapText="true" />
       <Pane layoutX="594.0" layoutY="87.0" prefHeight="66.0" prefWidth="176.0">
          <children>
             <Label fx:id="roiLabel" layoutX="1.0" text="ROI: " />
@@ -96,5 +96,6 @@
             <Label fx:id="budgetIncreaseLabel" layoutY="51.0" text="Budget increase:" />
          </children>
       </Pane>
+      <Button layoutX="671.0" layoutY="67.0" mnemonicParsing="false" onAction="#handleMethodSave" prefHeight="3.0" prefWidth="98.0" text="Save method" />
    </children>
 </AnchorPane>
