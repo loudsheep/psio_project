@@ -1,12 +1,15 @@
 package org.loudsheep.psio_project.frontend.controllers;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.loudsheep.psio_project.App;
@@ -74,6 +77,24 @@ public class StrategySelectController implements StockDataObserver {
         }
     }
 
+    private void loadMethod(Map<String, Object> method) {
+        System.out.println("LOADING METHOD: " + method);
+        String name = method.get("strategyName").toString();
+        String[] errors = TradingManager.getInstance().setStrategy(name, method);
+
+        if (errors.length > 0) {
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Error: " + errors[0], ButtonType.OK);
+            alert.showAndWait();
+        } else {
+            this.showMethodParams();
+        }
+    }
+
+    private void deleteMethod(Map<String, Object> method) {
+        SaveMethodService.deleteSavedMethod(method.get("name").toString());
+        this.showSavedMethods();
+    }
+
     private void showSavedMethods() {
         List<Map<String, Object>> methods = SaveMethodService.getSavedTradingMethods();
 
@@ -81,16 +102,21 @@ public class StrategySelectController implements StockDataObserver {
         for (Map<String, Object> method: methods) {
             VBox box = new VBox();
 
-//            Label header = new Label(method.get("name").toString());
-//            Label strategy = new Label(method.get("strategyName").toString());
             Button loadBtn = new Button("Load");
+            loadBtn.setOnAction(e -> loadMethod(method));
+            Button deleteBtn = new Button("Delete");
+            deleteBtn.setOnAction(e -> deleteMethod(method));
+            HBox hbox = new HBox(loadBtn, deleteBtn);
+
+
             String text = "";
             for (Map.Entry<String, Object> set : method.entrySet()) {
                 text += set.getKey() + ": " + set.getValue() + "\n";
             }
 
             Label label = new Label(text);
-            box.getChildren().addAll(label, loadBtn);
+            Separator sep = new Separator();
+            box.getChildren().addAll(label, hbox, sep);
 
             this.savedVbox.getChildren().add(box);
         }

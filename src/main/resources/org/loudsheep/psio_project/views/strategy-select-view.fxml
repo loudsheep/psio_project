@@ -44,10 +44,14 @@
         </yAxis>
       </LineChart>
       <Button fx:id="executeButton" layoutX="15.0" layoutY="400.0" mnemonicParsing="false" onAction="#handleExecuteButtonClick" prefHeight="52.0" prefWidth="569.0" text="Save" />
-      <VBox fx:id="savedVbox" layoutX="597.0" layoutY="32.0" prefHeight="420.0" prefWidth="248.0" style="-fx-border-color: black; -fx-border-radius: 3; -fx-border-width: 1;">
-         <padding>
-            <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
-         </padding></VBox>
       <Label layoutX="597.0" layoutY="13.0" text="Saved Trading Methods:" />
+      <ScrollPane fitToWidth="true" layoutX="597.0" layoutY="40.0" prefHeight="413.0" prefWidth="247.0">
+         <content>
+            <VBox fx:id="savedVbox" maxHeight="1.7976931348623157E308" prefWidth="244.0" spacing="2.0" style="-fx-border-color: black; -fx-border-radius: 3; -fx-border-width: 1;">
+               <padding>
+                  <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
+               </padding>
+            </VBox>
+         </content></ScrollPane>
     </children>
 </AnchorPane>

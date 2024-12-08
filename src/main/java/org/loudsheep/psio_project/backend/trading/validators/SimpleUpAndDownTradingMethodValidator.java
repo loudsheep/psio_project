@@ -16,7 +16,7 @@ public class SimpleUpAndDownTradingMethodValidator implements TradingMethodValid
     public String[] validate(Map<String, Object> formData) {
         List<String> errors = new ArrayList<>();
 
-        if (!formData.containsKey("budget") || !(formData.get("budget") instanceof Double)) {
+        if (!formData.containsKey("budget") || !(formData.get("budget") instanceof Number)) {
             errors.add("Budget is required and must be a number value.");
         } else {
             if ((double) formData.get("budget") <= 0) {
@@ -24,13 +24,12 @@ public class SimpleUpAndDownTradingMethodValidator implements TradingMethodValid
             }
         }
 
-        if (!formData.containsKey("daysBackToCheck") || !(formData.get("daysBackToCheck") instanceof Integer)) {
+        if (!formData.containsKey("daysBackToCheck") || !(formData.get("daysBackToCheck") instanceof Number)) {
             errors.add("daysBackToCheck is required and must be an integer.");
         } else {
-            int age = (int) formData.get("daysBackToCheck");
-            if (age <= 0) {
+            int daysBackToCheck = ((Number) formData.get("daysBackToCheck")).intValue();
+            if (daysBackToCheck <= 0)
                 errors.add("daysBackToCheck must be non-negative.");
-            }
         }
 
         return errors.toArray(new String[0]);
@@ -38,6 +37,6 @@ public class SimpleUpAndDownTradingMethodValidator implements TradingMethodValid
 
     @Override
     public TradingMethod create(Map<String, Object> formData) {
-        return new SimpleUpAndDownTradingMethod((Double) formData.get("budget"), (Integer) formData.get("daysBackToCheck"));
+        return new SimpleUpAndDownTradingMethod((Double) formData.get("budget"), ((Number) formData.get("daysBackToCheck")).intValue());
     }
 }

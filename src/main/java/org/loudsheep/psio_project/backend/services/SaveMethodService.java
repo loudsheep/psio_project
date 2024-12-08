@@ -61,6 +61,17 @@ public class SaveMethodService {
         return file.exists();
     }
 
+    private static List<Map<String, Object>> removeSavedWithName(List<Map<String, Object>> saved, String name) {
+        for (Map<String, Object> i: saved) {
+            if (Objects.equals(i.get("name"), name)) {
+                System.out.println("SAME NAME " + i);
+                saved.remove(i);
+                return saved;
+            }
+        }
+        return saved;
+    }
+
     public static List<Map<String, Object>> getSavedTradingMethods() {
         try {
             String path = createUserDataDirectory("methods");
@@ -82,7 +93,7 @@ public class SaveMethodService {
     }
 
     public static boolean saveTradingMethodToFile(TradingMethod method, String name) {
-        List<Map<String, Object>> saved = getSavedTradingMethods();
+        List<Map<String, Object>> saved = removeSavedWithName(getSavedTradingMethods(), name);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Map<String, Object> data = method.getMethodParams();
@@ -91,6 +102,18 @@ public class SaveMethodService {
 
         saved.add(data);
 
+        try {
+            String path = createUserDataDirectory("methods");
+            saveToFile(path, "methods.json", gson.toJson(saved));
+            return true;
+        } catch (IOException _) {
+            return false;
+        }
+    }
+
+    public static boolean deleteSavedMethod(String name) {
+        List<Map<String, Object>> saved = removeSavedWithName(getSavedTradingMethods(), name);
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
             String path = createUserDataDirectory("methods");
             saveToFile(path, "methods.json", gson.toJson(saved));
