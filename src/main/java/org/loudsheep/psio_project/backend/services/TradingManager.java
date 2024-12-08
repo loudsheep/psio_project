@@ -5,6 +5,7 @@ import org.loudsheep.psio_project.backend.observers.StockDataObserver;
 import org.loudsheep.psio_project.backend.trading.TradingMethodValidator;
 import org.loudsheep.psio_project.backend.trading.TradingMethod;
 import org.loudsheep.psio_project.backend.trading.validators.RandomTradingMethodValidator;
+import org.loudsheep.psio_project.backend.trading.validators.SimpleThresholdTradingMethodValidator;
 import org.loudsheep.psio_project.backend.trading.validators.SimpleUpAndDownTradingMethodValidator;
 
 import java.util.Map;
@@ -35,6 +36,7 @@ public class TradingManager implements StockDataObserver {
 
         if (strategyName.equals("SimpleUpAndDown")) validator = new SimpleUpAndDownTradingMethodValidator();
         else if (strategyName.equals("Random")) validator = new RandomTradingMethodValidator();
+        else if (strategyName.equals("SimpleThreshold")) validator = new SimpleThresholdTradingMethodValidator();
         else return new String[]{"Unknown strategy name '" + strategyName + "'"};
 
         String[] errors = validator.validate(params);
