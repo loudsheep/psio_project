@@ -4,7 +4,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox fx:id="VBoxPane" prefHeight="139.0" prefWidth="150.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.loudsheep.psio_project.frontend.controllers.SimpleStrategyFormController">
+<VBox fx:id="VBoxPane" prefHeight="139.0" prefWidth="150.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.loudsheep.psio_project.frontend.controllers.forms.SimpleMethodFormController">
     <children>
       <Label text="Simulation budget" />
       <TextField fx:id="budgetField" promptText="Enter a number" />

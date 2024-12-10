@@ -16,9 +16,9 @@ import javafx.scene.shape.Circle;
 import org.loudsheep.psio_project.App;
 import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
-import org.loudsheep.psio_project.backend.models.StrategyResult;
+import org.loudsheep.psio_project.backend.models.SimulationResult;
 import org.loudsheep.psio_project.backend.models.Transaction;
-import org.loudsheep.psio_project.backend.observers.StrategyResultObserver;
+import org.loudsheep.psio_project.backend.observers.SimulationResultObserver;
 import org.loudsheep.psio_project.backend.services.TradingManager;
 import org.loudsheep.psio_project.backend.trading.TradingMethod;
 import org.loudsheep.psio_project.frontend.SceneManager;
@@ -26,7 +26,7 @@ import org.loudsheep.psio_project.frontend.SceneManager;
 import java.util.Date;
 import java.util.Optional;
 
-public class StrategyExecutionController implements StrategyResultObserver {
+public class SimulationExecutionController implements SimulationResultObserver {
     public Label strategyNameLabel;
     public Label strategyDescriptionLabel;
     public Label stockSymbolLabel;
@@ -38,8 +38,8 @@ public class StrategyExecutionController implements StrategyResultObserver {
     public Label stockIncreaseLabel;
     public Label budgetIncreaseLabel;
 
-    private XYChart.Series<String, Number> series2; // Green points
-    private XYChart.Series<String, Number> series3;
+    private XYChart.Series<String, Number> buyTransactionSeries; // Green points
+    private XYChart.Series<String, Number> sellTransactionSeries;
 
     public void initialize() {
         StockData data = TradingManager.getInstance().getStockData();
@@ -48,8 +48,8 @@ public class StrategyExecutionController implements StrategyResultObserver {
         this.strategyNameLabel.setText(strategy.getName());
         this.strategyDescriptionLabel.setText(strategy.getDescription());
 
-        this.stockSymbolLabel.setText(data.getSymbol().toUpperCase());
-        this.stockDataPointsLabel.setText(data.getDailyData().size() + "");
+        this.stockSymbolLabel.setText(data.symbol().toUpperCase());
+        this.stockDataPointsLabel.setText(data.dailyData().size() + "");
 
         Date start = new Date(data.getFirstDataPointTimestamp() * 1000);
         Date end = new Date(data.getLastDataPointTimestamp() * 1000);
@@ -89,7 +89,7 @@ public class StrategyExecutionController implements StrategyResultObserver {
         XYChart.Series<String, Number> series1 = new XYChart.Series<>();
         series1.setName("Stock Price");
 
-        for (DayStockData day : stockData.getDailyData()) {
+        for (DayStockData day : stockData.dailyData()) {
             series1.getData().add(new XYChart.Data<>(day.getTimestamp() + "", day.getClose()));
         }
 
@@ -101,28 +101,28 @@ public class StrategyExecutionController implements StrategyResultObserver {
 
 
         // Dataset 2 (Green points)
-        series2 = new XYChart.Series<>();
-        series2.setName("Buy transactions");
+        buyTransactionSeries = new XYChart.Series<>();
+        buyTransactionSeries.setName("Buy transactions");
 
         // Dataset 3 (Red points)
-        series3 = new XYChart.Series<>();
-        series3.setName("Sell transactions");
+        sellTransactionSeries = new XYChart.Series<>();
+        sellTransactionSeries.setName("Sell transactions");
 
         // Add series to chart
-        lineChart.getData().addAll(series1, series2, series3);
+        lineChart.getData().addAll(series1, buyTransactionSeries, sellTransactionSeries);
 
-        series2.getNode().setStyle("-fx-stroke: transparent;");
-        series3.getNode().setStyle("-fx-stroke: transparent;");
-        series2.getData().forEach(data ->
+        buyTransactionSeries.getNode().setStyle("-fx-stroke: transparent;");
+        sellTransactionSeries.getNode().setStyle("-fx-stroke: transparent;");
+        buyTransactionSeries.getData().forEach(data ->
                 data.getNode().setStyle("-fx-background-color: green, white; -fx-background-radius: 5px;"));
-        series3.getData().forEach(data ->
+        sellTransactionSeries.getData().forEach(data ->
                 data.getNode().setStyle("-fx-background-color: red, white; -fx-background-radius: 5px;"));
 
         return lineChart;
     }
 
     @Override
-    public void onStrategyResultUpdate(StrategyResult result) {
+    public void onStrategyResultUpdate(SimulationResult result) {
         double roi = (double) Math.round(result.getROI() * 100 * 1000) / 1000;
         double budgetIncrease = (double) Math.round((result.getCurrentBudget() - result.getInitialBudget()) / result.getInitialBudget() * 100 * 100) / 100;
 
@@ -144,22 +144,22 @@ public class StrategyExecutionController implements StrategyResultObserver {
                 symbol.setFill(Color.LIGHTGREEN); // Set the color of the symbol
                 data.setNode(symbol);
 
-                this.series2.getData().add(data);
+                this.buyTransactionSeries.getData().add(data);
             } else {
                 XYChart.Data<String, Number> data = new XYChart.Data<>(transaction.timestamp() + "", transaction.price());
                 Circle symbol = new Circle(5); // Set the radius of the circle (size)
                 symbol.setFill(Color.RED); // Set the color of the symbol
                 data.setNode(symbol);
 
-                this.series3.getData().add(data);
+                this.sellTransactionSeries.getData().add(data);
             }
 
         });
     }
 
-    public void handleTestButtonClick(ActionEvent actionEvent) {
-        this.series2.getData().clear();
-        this.series3.getData().clear();
+    public void handleExecuteButtonClick(ActionEvent actionEvent) {
+        this.buyTransactionSeries.getData().clear();
+        this.sellTransactionSeries.getData().clear();
         TradingManager.getInstance().execute();
     }
 
@@ -170,7 +170,7 @@ public class StrategyExecutionController implements StrategyResultObserver {
     public void handleBackToSelection() {
         TradingManager.getInstance().stopExecution();
 
-        SceneManager.switchScene("views/strategy-select-view.fxml", "Select Strategy");
+        SceneManager.switchScene("views/method-select-view.fxml", "Select Strategy");
     }
 
     public void handleMethodSave() {
@@ -181,7 +181,7 @@ public class StrategyExecutionController implements StrategyResultObserver {
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(name -> {
-            if (TradingManager.getInstance().saveCurrentStrategy(name)){
+            if (TradingManager.getInstance().saveCurrentMethodToFile(name)){
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Saved successfully", ButtonType.OK);
                 alert.showAndWait();
             } else {

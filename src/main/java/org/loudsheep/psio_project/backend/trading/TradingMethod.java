@@ -1,7 +1,7 @@
 package org.loudsheep.psio_project.backend.trading;
 
 import org.loudsheep.psio_project.backend.models.StockData;
-import org.loudsheep.psio_project.backend.observers.StrategyResultObserver;
+import org.loudsheep.psio_project.backend.observers.SimulationResultObserver;
 
 import java.util.Map;
 
@@ -15,6 +15,6 @@ public interface TradingMethod {
     boolean isReadyToExecute();
     void stopExecution();
 
-    void addStrategyResultObserver(StrategyResultObserver observer);
-    void removeStrategyResultObserver(StrategyResultObserver observer);
+    void addStrategyResultObserver(SimulationResultObserver observer);
+    void removeStrategyResultObserver(SimulationResultObserver observer);
 }

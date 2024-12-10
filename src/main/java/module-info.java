@@ -9,4 +9,6 @@ module org.loudsheep.psio_project {
     exports org.loudsheep.psio_project;
     exports org.loudsheep.psio_project.frontend.controllers;
     opens org.loudsheep.psio_project.frontend.controllers to javafx.fxml;
+    exports org.loudsheep.psio_project.frontend.controllers.forms;
+    opens org.loudsheep.psio_project.frontend.controllers.forms to javafx.fxml;
 }

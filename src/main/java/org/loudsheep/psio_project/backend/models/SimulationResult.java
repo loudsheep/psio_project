@@ -1,30 +1,34 @@
 package org.loudsheep.psio_project.backend.models;
 
-import org.loudsheep.psio_project.backend.observers.StrategyResultObserver;
+import org.loudsheep.psio_project.backend.observers.SimulationResultObserver;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class StrategyResult {
+public class SimulationResult {
     private final List<Transaction> transactions = new ArrayList<>();
+    // initial money available
     private final double initialBudget;
+    // current money available
     private double currentBudget;
     private int stockOwned;
-    private List<StrategyResultObserver> observers = new ArrayList<>();
+    private List<SimulationResultObserver> observers = new ArrayList<>();
 
-    public StrategyResult(double initialBudget) {
+    public SimulationResult(double initialBudget) {
         this.initialBudget = Math.max(initialBudget, 0);
         this.currentBudget = this.initialBudget;
         this.stockOwned = 0;
     }
 
+    // check if value of new transaction does not exceed current budget
     public boolean canAddTransaction(double value) {
         return this.currentBudget + value >= 0;
     }
 
-    public boolean addTransaction(int volume, double price, long timestamp) {
-        if (!this.canAddTransaction(volume * price)) return false;
-        if (volume == 0) return false;
+    // add new transaction, where volume < 0 - buy, and volume > 0 - sell
+    public void addTransaction(int volume, double price, long timestamp) {
+        if (!this.canAddTransaction(volume * price)) return;
+        if (volume == 0) return;
 
         Transaction newTransaction = new Transaction(volume, price, timestamp);
         this.transactions.add(newTransaction);
@@ -33,35 +37,32 @@ public class StrategyResult {
         this.notifyObserversWithNewTransaction(newTransaction);
         this.notifyObserversWithObjectUpdate();
 
-        return true;
     }
 
     public boolean hasEnoughMoneyToBuy(int amount, double price) {
         return this.canAddTransaction(amount * price);
     }
 
+    // get max number of stock that can be bought with given price per stock
     public int maxStockToBuy(double price) {
         return (int) Math.floor(this.currentBudget / price);
     }
 
-    public boolean buyStock(int amount, double price, long timestamp) {
-        if (!hasEnoughMoneyToBuy(-amount, price)) return false;
+    public void buyStock(int amount, double price, long timestamp) {
+        if (!hasEnoughMoneyToBuy(-amount, price)) return;
 
         this.stockOwned += amount;
         // negative amount means buy
         this.addTransaction(-amount, price, timestamp);
-
-        return true;
     }
 
-    public boolean sellStock(int amount, double price, long timestamp) {
-        if (amount >= this.stockOwned) return false;
+    public void sellStock(int amount, double price, long timestamp) {
+        if (amount >= this.stockOwned) amount = this.stockOwned;
 
         this.stockOwned -= amount;
         // positive amount means sell
         this.addTransaction(amount, price, timestamp);
 
-        return true;
     }
 
     public void sellAllStock(double price, long timestamp) {
@@ -73,6 +74,7 @@ public class StrategyResult {
         return this.transactions.size();
     }
 
+    // return on investment
     public double getROI() {
         return this.currentBudget / this.initialBudget;
     }
@@ -85,26 +87,22 @@ public class StrategyResult {
         return stockOwned;
     }
 
-    public void setCurrentBudget(double currentBudget) {
-        this.currentBudget = currentBudget;
-    }
-
-    public void addObserver(StrategyResultObserver observer) {
+    public void addObserver(SimulationResultObserver observer) {
         this.observers.add(observer);
     }
 
-    public void removeObserver(StrategyResultObserver observer) {
+    public void removeObserver(SimulationResultObserver observer) {
         this.observers.remove(observer);
     }
 
     private void notifyObserversWithNewTransaction(Transaction transaction) {
-        for (StrategyResultObserver o : this.observers) {
+        for (SimulationResultObserver o : this.observers) {
             o.onTransactionAdd(transaction);
         }
     }
 
     private void notifyObserversWithObjectUpdate() {
-        for (StrategyResultObserver o : this.observers) {
+        for (SimulationResultObserver o : this.observers) {
             o.onStrategyResultUpdate(this);
         }
     }

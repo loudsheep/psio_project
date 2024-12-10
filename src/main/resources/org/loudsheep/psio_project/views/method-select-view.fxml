@@ -5,12 +5,13 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="460.0" prefWidth="851.0" stylesheets="@../styles/strategy-select.css" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.loudsheep.psio_project.frontend.controllers.StrategySelectController">
+<AnchorPane prefHeight="460.0" prefWidth="851.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.loudsheep.psio_project.frontend.controllers.SimulationMethodSelectController">
     <children>
-        <MenuButton fx:id="strategyMenuButton" layoutX="13.0" layoutY="14.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="168.0" text="Select strategy">
+        <MenuButton fx:id="methodMenuButton" layoutX="13.0" layoutY="14.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="168.0" text="Select strategy">
             <items>
-                <MenuItem fx:id="simpleUDStrategyButton" mnemonicParsing="false" onAction="#handleSimpleMethod" text="Simple Up&amp;Down" />
-            <MenuItem fx:id="randomStrategyButton" mnemonicParsing="false" onAction="#handleRandomMethod" text="Random Strategy" />
+                <MenuItem fx:id="simpleUDMethodButton" mnemonicParsing="false" onAction="#handleSimpleMethod" text="Simple Up&amp;Down" />
+            <MenuItem fx:id="randomMethodButton" mnemonicParsing="false" onAction="#handleRandomMethod" text="Random Strategy" />
+            <MenuItem fx:id="multifusionMethodButton" mnemonicParsing="false" onAction="#handleMultiFusionMethod" text="Multi-indicator fusion" />
             </items>
         </MenuButton>
 
@@ -43,7 +44,7 @@
           <NumberAxis forceZeroInRange="false" prefHeight="181.0" prefWidth="29.0" side="LEFT" />
         </yAxis>
       </LineChart>
-      <Button fx:id="executeButton" layoutX="15.0" layoutY="400.0" mnemonicParsing="false" onAction="#handleExecuteButtonClick" prefHeight="52.0" prefWidth="569.0" text="Save" />
+      <Button fx:id="executeButton" layoutX="15.0" layoutY="400.0" mnemonicParsing="false" onAction="#handleSaveButtonClick" prefHeight="52.0" prefWidth="569.0" text="Save" />
       <Label layoutX="597.0" layoutY="13.0" text="Saved Trading Methods:" />
       <ScrollPane fitToWidth="true" layoutX="597.0" layoutY="40.0" prefHeight="413.0" prefWidth="247.0">
          <content>

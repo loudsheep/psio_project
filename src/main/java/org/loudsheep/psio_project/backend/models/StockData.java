@@ -2,16 +2,7 @@ package org.loudsheep.psio_project.backend.models;
 
 import java.util.List;
 
-public class StockData {
-    private String symbol;
-    private List<DayStockData> dailyData;
-
-    // Constructor
-    public StockData(String symbol, List<DayStockData> dailyData) {
-        this.symbol = symbol;
-        this.dailyData = dailyData;
-    }
-
+public record StockData(String symbol, List<DayStockData> dailyData) {
     public long getFirstDataPointTimestamp() {
         if (!this.dailyData.isEmpty()) return this.dailyData.getFirst().getTimestamp();
         return 0;
@@ -30,10 +21,6 @@ public class StockData {
         return this.dailyData.getLast();
     }
 
-    // Getters
-    public String getSymbol() { return symbol; }
-    public List<DayStockData> getDailyData() { return dailyData; }
-
     @Override
     public String toString() {
         return "StockData{" +
@@ -41,5 +28,4 @@ public class StockData {
                 ", dailyData=" + dailyData +
                 '}';
     }
-
 }

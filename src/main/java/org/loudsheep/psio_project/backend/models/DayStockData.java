@@ -10,7 +10,7 @@ public class DayStockData {
     private double open;
     private double close;
 
-    // Constructor
+    // constructor
     public DayStockData(long timestamp, double low, double high, double open, double close) {
         this.timestamp = timestamp;
         this.low = low;
@@ -20,7 +20,7 @@ public class DayStockData {
         this.date = new Date(timestamp * 1000);
     }
 
-    // Getters for each field
+    // getters for each field
     public long getTimestamp() {
         return timestamp;
     }
@@ -41,7 +41,7 @@ public class DayStockData {
         return close;
     }
 
-    // Convert timestamp to Date object
+    // convert timestamp to Date object
     public Date getDate() {
         return new Date(timestamp * 1000); // Convert seconds to milliseconds
     }

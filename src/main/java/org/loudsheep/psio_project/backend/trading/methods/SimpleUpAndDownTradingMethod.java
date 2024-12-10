@@ -2,8 +2,8 @@ package org.loudsheep.psio_project.backend.trading.methods;
 
 import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
-import org.loudsheep.psio_project.backend.models.StrategyResult;
-import org.loudsheep.psio_project.backend.observers.StrategyResultObserver;
+import org.loudsheep.psio_project.backend.models.SimulationResult;
+import org.loudsheep.psio_project.backend.observers.SimulationResultObserver;
 import org.loudsheep.psio_project.backend.trading.TradingMethod;
 
 import java.util.Map;
@@ -15,21 +15,21 @@ public class SimpleUpAndDownTradingMethod implements TradingMethod {
 
     private final double budget;
     private final int daysBackToCheck;
-    private final StrategyResult result;
+    private final SimulationResult result;
 
     public SimpleUpAndDownTradingMethod(double budget, int daysBackToCheck) {
         this.budget = budget;
         this.daysBackToCheck = daysBackToCheck;
-        this.result = new StrategyResult(budget);
+        this.result = new SimulationResult(budget);
 
         System.out.println("NEW SimpleUpAndDownStrategy created");
     }
 
     private int getLastDaysTrend(StockData data, int currentDayIdx, int daysBack) {
         int trend = 0;
-        DayStockData currentData = data.getDailyData().get(currentDayIdx);
+        DayStockData currentData = data.dailyData().get(currentDayIdx);
         for (int i = currentDayIdx; i >= Math.max(0, currentDayIdx - daysBack); i--) {
-            DayStockData dayData = data.getDailyData().get(i);
+            DayStockData dayData = data.dailyData().get(i);
 
             if (dayData.getOpen() == currentData.getOpen()) trend = 0;
             else trend = (dayData.getOpen() - currentData.getOpen() > 0) ? 1 : -1;
@@ -43,8 +43,8 @@ public class SimpleUpAndDownTradingMethod implements TradingMethod {
         this.stopExecution = false;
 
         System.out.println("EXECUTING THE STRATEGY");
-        for (int i = 0; i < data.getDailyData().size(); i++) {
-            DayStockData dayData = data.getDailyData().get(i);
+        for (int i = 0; i < data.dailyData().size(); i++) {
+            DayStockData dayData = data.dailyData().get(i);
             double price = dayData.getOpen();
 
             int trend = this.getLastDaysTrend(data, i, this.daysBackToCheck);
@@ -66,7 +66,7 @@ public class SimpleUpAndDownTradingMethod implements TradingMethod {
             }
         }
 
-        this.result.sellAllStock(data.getDailyData().getLast().getClose(), data.getLastDataPointTimestamp());
+        this.result.sellAllStock(data.dailyData().getLast().getClose(), data.getLastDataPointTimestamp());
     }
 
     @Override
@@ -82,12 +82,12 @@ public class SimpleUpAndDownTradingMethod implements TradingMethod {
     }
 
     @Override
-    public void addStrategyResultObserver(StrategyResultObserver observer) {
+    public void addStrategyResultObserver(SimulationResultObserver observer) {
         this.result.addObserver(observer);
     }
 
     @Override
-    public void removeStrategyResultObserver(StrategyResultObserver observer) {
+    public void removeStrategyResultObserver(SimulationResultObserver observer) {
         this.result.removeObserver(observer);
     }
 

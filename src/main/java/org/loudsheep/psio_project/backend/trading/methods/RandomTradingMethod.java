@@ -2,8 +2,8 @@ package org.loudsheep.psio_project.backend.trading.methods;
 
 import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
-import org.loudsheep.psio_project.backend.models.StrategyResult;
-import org.loudsheep.psio_project.backend.observers.StrategyResultObserver;
+import org.loudsheep.psio_project.backend.models.SimulationResult;
+import org.loudsheep.psio_project.backend.observers.SimulationResultObserver;
 import org.loudsheep.psio_project.backend.trading.TradingMethod;
 
 import java.util.Map;
@@ -13,12 +13,12 @@ public class RandomTradingMethod implements TradingMethod {
     private static final String description = "Random decisions";
 
     private final double budget;
-    private final StrategyResult result;
+    private final SimulationResult result;
     private boolean stopExecution = false;
 
     public RandomTradingMethod(double budget) {
         this.budget = budget;
-        this.result = new StrategyResult(budget);
+        this.result = new SimulationResult(budget);
 
         System.out.println("NEW RandomStrategy created");
     }
@@ -28,8 +28,8 @@ public class RandomTradingMethod implements TradingMethod {
         this.result.resetState();
         this.stopExecution = false;
 
-        for (int i = 0; i < data.getDailyData().size(); i++) {
-            DayStockData dayData = data.getDailyData().get(i);
+        for (int i = 0; i < data.dailyData().size(); i++) {
+            DayStockData dayData = data.dailyData().get(i);
             double price = dayData.getOpen();
 
             double rand = Math.random();
@@ -59,7 +59,7 @@ public class RandomTradingMethod implements TradingMethod {
             }
         }
 
-        this.result.sellAllStock(data.getDailyData().getLast().getClose(), data.getLastDataPointTimestamp());
+        this.result.sellAllStock(data.dailyData().getLast().getClose(), data.getLastDataPointTimestamp());
     }
 
     @Override
@@ -74,12 +74,12 @@ public class RandomTradingMethod implements TradingMethod {
     }
 
     @Override
-    public void addStrategyResultObserver(StrategyResultObserver observer) {
+    public void addStrategyResultObserver(SimulationResultObserver observer) {
         this.result.addObserver(observer);
     }
 
     @Override
-    public void removeStrategyResultObserver(StrategyResultObserver observer) {
+    public void removeStrategyResultObserver(SimulationResultObserver observer) {
         this.result.removeObserver(observer);
     }
 

@@ -19,30 +19,31 @@ public class StockService {
     private static final String BASE_URL = "https://query1.finance.yahoo.com/v8/finance/chart/%s?events=capitalGain|div|split&formatted=true&includeAdjustedClose=true&interval=1d&period1=%s&period2=%s";
     private final List<StockDataObserver> observers = new ArrayList<>();
 
-    // Register an observer
+    // register an observer
     public void addObserver(StockDataObserver observer) {
         observers.add(observer);
     }
 
-    // Remove an observer
+    // remove an observer
     public void removeObserver(StockDataObserver observer) {
         observers.remove(observer);
     }
 
-    // Notify all observers
+    // notify all observers
     private void notifyObservers(StockData data) {
         for (StockDataObserver observer : observers) {
             observer.onDataChanged(data);
         }
     }
 
+    // notify observers if error occurred
     private void notifyError(String error) {
         for (StockDataObserver observer : observers) {
             observer.setError(error);
         }
     }
 
-    // Fetch and parse stock data for a given symbol
+    // fetch and parse stock data for a given symbol
     public void getStockData(String symbol, long startTime, long endTime) {
         String urlString = String.format(BASE_URL, symbol.toUpperCase(), startTime, endTime);
         System.out.println(urlString);
@@ -50,23 +51,24 @@ public class StockService {
         try {
             jsonResponse = fetchJsonData(urlString);
 
-            // Parse the fetched data
+            // parse the fetched data
             StockData stockData = parseStockData(symbol, jsonResponse);
 
-            // Notify observers with the new stock data
+            // notify observers with the new stock data
             notifyObservers(stockData);
         } catch (IOException e) {
+            // error occurred, notify with message
             this.notifyError(e.getMessage());
         }
     }
 
-    // Fetch JSON data from URL
+    // fetch JSON data from URL
     private String fetchJsonData(String urlString) throws IOException {
         URL url = new URL(urlString);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("GET");
 
-        // Check the HTTP response code
+        // check the HTTP response code
         int responseCode = connection.getResponseCode();
         if (responseCode == HttpURLConnection.HTTP_BAD_REQUEST) {
             throw new IOException("Dates must not be in future!");
@@ -76,7 +78,7 @@ public class StockService {
             throw new IOException("Failed to fetch data, HTTP response code: " + responseCode);
         }
 
-        // Read response from input stream
+        // read response from input stream
         BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
         StringBuilder response = new StringBuilder();
         String line;
@@ -88,11 +90,10 @@ public class StockService {
         return response.toString();
     }
 
-    // Parse JSON response to StockData (you'll add the actual parsing logic here)
+    // parse JSON response to StockData
     private StockData parseStockData(String symbol, String jsonResponse) throws IOException {
         List<DayStockData> dailyData = new ArrayList<>();
 
-        // Example JSON parsing using JsonParser and manual processing (add your logic here)
         JsonObject jsonObject = JsonParser.parseString(jsonResponse).getAsJsonObject();
         JsonObject resultArray = jsonObject.getAsJsonObject("chart").getAsJsonArray("result")
                 .get(0).getAsJsonObject();
@@ -115,7 +116,7 @@ public class StockService {
             dailyData.add(new DayStockData(timestamp, low.getAsDouble(), high.getAsDouble(), open.getAsDouble(), close.getAsDouble()));
         }
 
-        // Create and return StockData object
+        // create and return StockData object
         return new StockData(symbol, dailyData);
     }
 }

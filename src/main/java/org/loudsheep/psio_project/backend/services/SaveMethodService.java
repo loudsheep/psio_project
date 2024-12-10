@@ -111,15 +111,13 @@ public class SaveMethodService {
         }
     }
 
-    public static boolean deleteSavedMethod(String name) {
+    public static void deleteSavedMethod(String name) {
         List<Map<String, Object>> saved = removeSavedWithName(getSavedTradingMethods(), name);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
             String path = createUserDataDirectory("methods");
             saveToFile(path, "methods.json", gson.toJson(saved));
-            return true;
         } catch (IOException _) {
-            return false;
         }
     }
 }

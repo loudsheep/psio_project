@@ -14,7 +14,7 @@ public class App extends Application {
     public void start(Stage stage) throws IOException {
         SceneManager.setStage(stage);
 
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("views/strategy-select-view.fxml"));
+        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("views/method-select-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
         stage.setTitle("Stock Strategy Simulation");
         stage.setScene(scene);

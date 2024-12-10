@@ -2,7 +2,6 @@ package org.loudsheep.psio_project.frontend.controllers;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -10,7 +9,6 @@ import javafx.scene.chart.LineChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import org.loudsheep.psio_project.App;
 import org.loudsheep.psio_project.backend.models.DayStockData;
@@ -20,16 +18,15 @@ import org.loudsheep.psio_project.backend.services.SaveMethodService;
 import org.loudsheep.psio_project.backend.services.TradingManager;
 import org.loudsheep.psio_project.backend.trading.TradingMethod;
 import org.loudsheep.psio_project.frontend.SceneManager;
+import org.loudsheep.psio_project.frontend.util.Epoch;
 
 import java.time.*;
 import java.util.List;
 import java.util.Map;
 
-public class StrategySelectController implements StockDataObserver {
-    public MenuItem simpleUDStrategyButton;
+public class SimulationMethodSelectController implements StockDataObserver {
     public VBox parametersVBox;
-    public MenuButton strategyMenuButton;
-    public Pane formPane;
+    public VBox savedVbox;
 
     // Stock data fields
     public TextField symbolField;
@@ -37,8 +34,12 @@ public class StrategySelectController implements StockDataObserver {
     public DatePicker endDateField;
     public Label errorLabel;
     public LineChart lineChart;
-    public MenuItem randomStrategyButton;
-    public VBox savedVbox;
+
+    // menu items of different methods
+    public MenuButton methodMenuButton;
+    public MenuItem randomMethodButton;
+    public MenuItem simpleUDMethodButton;
+    public MenuItem multifusionMethodButton;
 
     // Handles getting stock data
     public void initialize() {
@@ -46,7 +47,7 @@ public class StrategySelectController implements StockDataObserver {
         StockData data = TradingManager.getInstance().getStockData();
         if (data != null) {
             this.onDataChanged(data);
-            this.symbolField.setText(data.getSymbol().toUpperCase());
+            this.symbolField.setText(data.symbol().toUpperCase());
 
 
             this.startDateField.setValue(Instant.ofEpochSecond(data.getFirstDataPointTimestamp()).atZone(ZoneId.systemDefault()).toLocalDate());
@@ -59,10 +60,11 @@ public class StrategySelectController implements StockDataObserver {
         this.errorLabel.setText("");
     }
 
+    // show selected method params
     private void showMethodParams() {
         TradingMethod method = TradingManager.getInstance().getTradingMethodInstance();
         if (method != null) {
-            this.strategyMenuButton.setText(method.getName());
+            this.methodMenuButton.setText(method.getName());
 
             Label tmp = new Label();
             tmp.setWrapText(true);
@@ -77,11 +79,10 @@ public class StrategySelectController implements StockDataObserver {
         }
     }
 
+    // load saved method
     private void loadMethod(Map<String, Object> method) {
-        System.out.println("LOADING METHOD: " + method);
         String name = method.get("strategyName").toString();
-        String[] errors = TradingManager.getInstance().setStrategy(name, method);
-
+        String[] errors = TradingManager.getInstance().setMethod(name, method);
         if (errors.length > 0) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Error: " + errors[0], ButtonType.OK);
             alert.showAndWait();
@@ -90,16 +91,18 @@ public class StrategySelectController implements StockDataObserver {
         }
     }
 
+    // delete save method from file
     private void deleteMethod(Map<String, Object> method) {
         SaveMethodService.deleteSavedMethod(method.get("name").toString());
         this.showSavedMethods();
     }
 
+    // list of saved methods and load/delete buttons
     private void showSavedMethods() {
         List<Map<String, Object>> methods = SaveMethodService.getSavedTradingMethods();
 
         this.savedVbox.getChildren().clear();
-        for (Map<String, Object> method: methods) {
+        for (Map<String, Object> method : methods) {
             VBox box = new VBox();
 
             Button loadBtn = new Button("Load");
@@ -109,12 +112,12 @@ public class StrategySelectController implements StockDataObserver {
             HBox hbox = new HBox(loadBtn, deleteBtn);
 
 
-            String text = "";
+            StringBuilder text = new StringBuilder();
             for (Map.Entry<String, Object> set : method.entrySet()) {
-                text += set.getKey() + ": " + set.getValue() + "\n";
+                text.append(set.getKey()).append(": ").append(set.getValue()).append("\n");
             }
 
-            Label label = new Label(text);
+            Label label = new Label(text.toString());
             Separator sep = new Separator();
             box.getChildren().addAll(label, hbox, sep);
 
@@ -122,19 +125,27 @@ public class StrategySelectController implements StockDataObserver {
         }
     }
 
-    // Handles Simple Up & Down Strategy selection
+    // for handling method selection/forms with params
     @FXML
     private void handleSimpleMethod() {
-        loadStrategyForm("views/forms/simple-strategy-form.fxml", Map.of());
-        strategyMenuButton.setText(simpleUDStrategyButton.getText());
+        loadMethodForm("views/forms/simple-method-form.fxml", Map.of());
+        methodMenuButton.setText(simpleUDMethodButton.getText());
     }
 
+    @FXML
     public void handleRandomMethod() {
-        loadStrategyForm("views/forms/random-strategy-form.fxml", Map.of());
-        strategyMenuButton.setText(randomStrategyButton.getText());
+        loadMethodForm("views/forms/random-method-form.fxml", Map.of());
+        methodMenuButton.setText(randomMethodButton.getText());
     }
 
-    private void loadStrategyForm(String fxmlPath, Map<String, Object> initParams) {
+    @FXML
+    public void handleMultiFusionMethod() {
+        loadMethodForm("views/forms/multi-indicator-fusion-method-form.fxml", Map.of());
+        methodMenuButton.setText(randomMethodButton.getText());
+    }
+
+    // load and show params form for specified method
+    private void loadMethodForm(String fxmlPath, Map<String, Object> initParams) {
         try {
             FXMLLoader loader = new FXMLLoader(App.class.getResource(fxmlPath));
             Node formNode = loader.load();
@@ -154,32 +165,33 @@ public class StrategySelectController implements StockDataObserver {
         }
     }
 
+    // method params form callback
     private void handleFormSubmit(Map<String, Object> formData) {
-        // Handle the submitted form data
-        System.out.println("Form submitted with data: " + formData);
         showMethodParams();
     }
 
+    // set stock data
     public void handleStockData() {
-        long startEpoch = toEpochSeconds(startDateField.getValue().getYear(), startDateField.getValue().getMonthValue(), startDateField.getValue().getDayOfMonth());
-        long endEpoch = toEpochSeconds(endDateField.getValue().getYear(), endDateField.getValue().getMonthValue(), endDateField.getValue().getDayOfMonth());
+        if (this.startDateField.getValue() == null || this.endDateField.getValue() == null || this.symbolField.getText().isEmpty()) {
+            this.errorLabel.setText("All fields are required");
+            return;
+        }
+
+        long startEpoch = Epoch.toEpochSeconds(startDateField.getValue().getYear(), startDateField.getValue().getMonthValue(), startDateField.getValue().getDayOfMonth());
+        long endEpoch = Epoch.toEpochSeconds(endDateField.getValue().getYear(), endDateField.getValue().getMonthValue(), endDateField.getValue().getDayOfMonth());
 
         TradingManager.getInstance().setStockData(symbolField.getText(), startEpoch, endEpoch);
         this.errorLabel.setText("");
     }
 
-    public static long toEpochSeconds(int year, int month, int day) {
-        LocalDateTime dateTime = LocalDateTime.of(year, month, day, 0, 0);
-        return dateTime.toEpochSecond(ZoneOffset.UTC);
-    }
-
+    // on stock data changed callback, show chart
     @Override
     public void onDataChanged(StockData data) {
         Platform.runLater(() -> {
             XYChart.Series series = new XYChart.Series();
             series.setName(symbolField.getText() + " chart");
 
-            for (DayStockData day : data.getDailyData()) {
+            for (DayStockData day : data.dailyData()) {
                 series.getData().add(new XYChart.Data<>(day.getTimestamp() + "", day.getClose()));
             }
 
@@ -188,6 +200,7 @@ public class StrategySelectController implements StockDataObserver {
         });
     }
 
+    // handle stock api errors
     @Override
     public void setError(String error) {
         Platform.runLater(() -> {
@@ -195,12 +208,14 @@ public class StrategySelectController implements StockDataObserver {
         });
     }
 
-    public void handleExecuteButtonClick() {
+    // check if method and stock data are set, and show execution view
+    @FXML
+    public void handleSaveButtonClick() {
         if (!TradingManager.getInstance().isReadyToExecute()) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Not enough data to execute the strategy", ButtonType.OK);
             alert.showAndWait();
         } else {
-            SceneManager.switchScene("views/strategy-execution-view.fxml", "Execute Strategy");
+            SceneManager.switchScene("views/simulation-execution-view.fxml", "Execute Strategy");
         }
     }
 }
