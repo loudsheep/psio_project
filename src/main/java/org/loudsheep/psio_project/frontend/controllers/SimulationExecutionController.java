@@ -171,7 +171,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
     public void handleBackToSelection() {
         TradingController.getInstance().stopExecution();
 
-        SceneManager.switchScene("views/method-select-view.fxml", "Select Strategy");
+        SceneManager.switchScene("views/formula-select-view.fxml", "Select Strategy");
     }
 
     public void handleMethodSave() {
