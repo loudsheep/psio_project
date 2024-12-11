@@ -1,7 +1,6 @@
 package org.loudsheep.psio_project.frontend.controllers;
 
 import javafx.application.Platform;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -23,6 +22,7 @@ import org.loudsheep.psio_project.frontend.util.Epoch;
 import java.time.*;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class SimulationMethodSelectController implements StockDataObserver {
     public VBox parametersVBox;
@@ -74,9 +74,20 @@ public class SimulationMethodSelectController implements StockDataObserver {
                 text += set.getKey() + ": " + set.getValue() + "\n";
             }
             tmp.setText(text);
+
+            Button editBtn = new Button("Edit");
+            editBtn.setOnAction(e -> this.editCurrentMethod());
+
             parametersVBox.getChildren().clear();
-            parametersVBox.getChildren().add(tmp);
+            parametersVBox.getChildren().addAll(tmp, editBtn);
         }
+    }
+
+    private void editCurrentMethod() {
+        if (TradingManager.getInstance().getTradingMethodInstance() == null) return;
+
+        String methodName = TradingManager.getInstance().getTradingMethodInstance().getSignature();
+        this.loadFormForMethod(methodName, TradingManager.getInstance().getTradingMethodInstance().getMethodParams());
     }
 
     // load saved method
@@ -125,22 +136,33 @@ public class SimulationMethodSelectController implements StockDataObserver {
         }
     }
 
+    private void loadFormForMethod(String methodName, Map<String, Object> params) {
+        switch (methodName) {
+            case "SimpleUpAndDown" -> loadMethodForm("views/forms/simple-method-form.fxml", params);
+            case "Random" -> loadMethodForm("views/forms/random-method-form.fxml", params);
+            case "MultiIndicatorFusion" ->
+                    loadMethodForm("views/forms/multi-indicator-fusion-method-form.fxml", params);
+            case null, default -> {
+            }
+        }
+    }
+
     // for handling method selection/forms with params
     @FXML
     private void handleSimpleMethod() {
-        loadMethodForm("views/forms/simple-method-form.fxml", Map.of());
+        loadFormForMethod("SimpleUpAndDown", Map.of());
         methodMenuButton.setText(simpleUDMethodButton.getText());
     }
 
     @FXML
     public void handleRandomMethod() {
-        loadMethodForm("views/forms/random-method-form.fxml", Map.of());
+        loadFormForMethod("Random", Map.of());
         methodMenuButton.setText(randomMethodButton.getText());
     }
 
     @FXML
     public void handleMultiFusionMethod() {
-        loadMethodForm("views/forms/multi-indicator-fusion-method-form.fxml", Map.of());
+        loadFormForMethod("MultiIndicatorFusion", Map.of());
         methodMenuButton.setText(randomMethodButton.getText());
     }
 

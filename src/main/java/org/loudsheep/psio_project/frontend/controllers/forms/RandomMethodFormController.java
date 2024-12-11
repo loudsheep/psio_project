@@ -27,15 +27,10 @@ public class RandomMethodFormController implements FormControllerInterface, Form
 
     @FXML
     private void initialize() {
-        // Restrict input to integers using a TextFormatter
-        UnaryOperator<TextFormatter.Change> integerFilter = change -> {
-            String newText = change.getControlNewText();
-            if (newText.matches("-?\\d*")) { // Allow digits and an optional leading "-"
-                return change;
-            }
-            return null; // Reject the change
-        };
-        budgetField.setTextFormatter(new TextFormatter<>(integerFilter));
+        // restrict input to integers using a TextFormatter
+        UnaryOperator<TextFormatter.Change> doubleFilter = change -> change.getControlNewText().matches("-?\\d*(\\.\\d*)?") ? change : null;
+
+        budgetField.setTextFormatter(new TextFormatter<>(doubleFilter));
     }
 
     @Override

@@ -17,6 +17,7 @@ public class TradingManager implements StockDataObserver {
     private final StockService stockService;
     private StockData stockData;
     private TradingMethod tradingMethodInstance;
+    private Thread simulationThread;
 
     private TradingManager() {
         this.stockService = new StockService();
@@ -68,25 +69,32 @@ public class TradingManager implements StockDataObserver {
     // check if all instance are initialized and ready to execute the simulation
     public boolean isReadyToExecute() {
         if (this.tradingMethodInstance == null || !this.tradingMethodInstance.isReadyToExecute()) return false;
-        if (this.stockData == null) return false;
-
-        return true;
+        return this.stockData != null;
     }
 
     // execute the simulation
     public void execute() {
         if (!this.isReadyToExecute()) return;
-        this.tradingMethodInstance.stopExecution();
+        this.stopExecution();
 
         // Execute trading method async
-        new Thread(() -> this.tradingMethodInstance.execute(this.stockData)).start();
-
-        System.out.println(SaveMethodService.getSavedTradingMethods());
+        this.simulationThread = new Thread(() -> this.tradingMethodInstance.execute(this.stockData));
+        this.simulationThread.start();
     }
 
     // halt execution of the simulation
     public void stopExecution() {
-        if (this.tradingMethodInstance != null) this.tradingMethodInstance.stopExecution();
+        if (this.tradingMethodInstance != null) {
+            this.tradingMethodInstance.stopExecution();
+        }
+        if (this.simulationThread != null) {
+            try {
+                this.simulationThread.join();
+            } catch (InterruptedException e) {
+                return;
+            }
+            this.simulationThread = null;
+        }
     }
 
     // save current method to file

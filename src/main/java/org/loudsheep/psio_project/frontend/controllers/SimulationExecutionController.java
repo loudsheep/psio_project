@@ -22,6 +22,7 @@ import org.loudsheep.psio_project.backend.observers.SimulationResultObserver;
 import org.loudsheep.psio_project.backend.services.TradingManager;
 import org.loudsheep.psio_project.backend.trading.TradingMethod;
 import org.loudsheep.psio_project.frontend.SceneManager;
+import org.loudsheep.psio_project.frontend.util.Epoch;
 
 import java.util.Date;
 import java.util.Optional;
@@ -51,8 +52,8 @@ public class SimulationExecutionController implements SimulationResultObserver {
         this.stockSymbolLabel.setText(data.symbol().toUpperCase());
         this.stockDataPointsLabel.setText(data.dailyData().size() + "");
 
-        Date start = new Date(data.getFirstDataPointTimestamp() * 1000);
-        Date end = new Date(data.getLastDataPointTimestamp() * 1000);
+        Date start = Epoch.toDate(data.getFirstDataPointTimestamp() * 1000);
+        Date end = Epoch.toDate(data.getLastDataPointTimestamp() * 1000);
         this.stockDataRangeLabel.setText(start + " - " + end);
 
         double increase = (double)Math.round((data.getLastDataPoint().getClose() - data.getFirstDataPoint().getClose()) / data.getFirstDataPoint().getClose() * 100 * 100)/100;

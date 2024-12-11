@@ -31,7 +31,7 @@ public class MultiIndicatorFusionFormController implements FormControllerInterfa
 
     @FXML
     private void initialize() {
-        // Restrict input to integers for periods and doubles for budget/multiplier
+        // restrict input to integers for periods and doubles for budget/multiplier
         UnaryOperator<TextFormatter.Change> integerFilter = change -> change.getControlNewText().matches("-?\\d*") ? change : null;
         UnaryOperator<TextFormatter.Change> doubleFilter = change -> change.getControlNewText().matches("-?\\d*(\\.\\d*)?") ? change : null;
 

@@ -27,16 +27,12 @@ public class SimpleMethodFormController implements FormControllerInterface, Form
 
     @FXML
     private void initialize() {
-        // Restrict input to integers using a TextFormatter
-        UnaryOperator<TextFormatter.Change> integerFilter = change -> {
-            String newText = change.getControlNewText();
-            if (newText.matches("-?\\d*")) { // Allow digits and an optional leading "-"
-                return change;
-            }
-            return null; // Reject the change
-        };
+        // restrict input to integers using a TextFormatter
+        UnaryOperator<TextFormatter.Change> integerFilter = change -> change.getControlNewText().matches("-?\\d*") ? change : null;
+        UnaryOperator<TextFormatter.Change> doubleFilter = change -> change.getControlNewText().matches("-?\\d*(\\.\\d*)?") ? change : null;
+
         daysField.setTextFormatter(new TextFormatter<>(integerFilter));
-        budgetField.setTextFormatter(new TextFormatter<>(integerFilter));
+        budgetField.setTextFormatter(new TextFormatter<>(doubleFilter));
     }
 
     @Override
