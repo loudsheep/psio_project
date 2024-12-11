@@ -6,7 +6,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import org.loudsheep.psio_project.backend.services.TradingManager;
+import org.loudsheep.psio_project.TradingController;
 import org.loudsheep.psio_project.frontend.controllers.FormControllerInterface;
 import org.loudsheep.psio_project.frontend.interfaces.FormErrorCallback;
 import org.loudsheep.psio_project.frontend.interfaces.FormSubmitCallback;
@@ -75,7 +75,7 @@ public class SimpleMethodFormController implements FormControllerInterface, Form
             formData.put("daysBackToCheck", Integer.parseInt(daysField.getText()));
             formData.put("budget", Double.parseDouble(budgetField.getText()));
 
-            String[] errors = TradingManager.getInstance().setMethod("SimpleUpAndDown", formData);
+            String[] errors = TradingController.getInstance().setMethod("SimpleUpAndDown", formData);
             if (errors.length > 0) this.setError(errors[0]);
 
             submitCallback.onSubmit(formData);

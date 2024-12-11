@@ -6,7 +6,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import org.loudsheep.psio_project.backend.services.TradingManager;
+import org.loudsheep.psio_project.TradingController;
 import org.loudsheep.psio_project.frontend.controllers.FormControllerInterface;
 import org.loudsheep.psio_project.frontend.interfaces.FormErrorCallback;
 import org.loudsheep.psio_project.frontend.interfaces.FormSubmitCallback;
@@ -99,7 +99,7 @@ public class MultiIndicatorFusionFormController implements FormControllerInterfa
             formData.put("bollingerPeriod", Integer.parseInt(bollingerPeriodField.getText()));
             formData.put("bollingerMultiplier", Double.parseDouble(bollingerMultiplierField.getText()));
 
-            String[] errors = TradingManager.getInstance().setMethod("MultiIndicatorFusion", formData);
+            String[] errors = TradingController.getInstance().setMethod("MultiIndicatorFusion", formData);
             if (errors.length > 0) {
                 this.setError(errors[0]);
                 return;

@@ -5,7 +5,7 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane prefHeight="460.0" prefWidth="851.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.loudsheep.psio_project.frontend.controllers.SimulationMethodSelectController">
+<AnchorPane prefHeight="460.0" prefWidth="851.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.loudsheep.psio_project.frontend.controllers.SimulationFormulaSelectController">
     <children>
         <MenuButton fx:id="methodMenuButton" layoutX="13.0" layoutY="14.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="168.0" text="Select strategy">
             <items>

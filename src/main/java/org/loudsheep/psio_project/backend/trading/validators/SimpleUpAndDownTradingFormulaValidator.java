@@ -1,15 +1,15 @@
 package org.loudsheep.psio_project.backend.trading.validators;
 
-import org.loudsheep.psio_project.backend.trading.TradingMethod;
-import org.loudsheep.psio_project.backend.trading.TradingMethodValidator;
-import org.loudsheep.psio_project.backend.trading.methods.SimpleUpAndDownTradingMethod;
+import org.loudsheep.psio_project.backend.trading.TradingFormula;
+import org.loudsheep.psio_project.backend.trading.TradingFormulaValidator;
+import org.loudsheep.psio_project.backend.trading.formulas.SimpleUpAndDownTradingFormula;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class SimpleUpAndDownTradingMethodValidator implements TradingMethodValidator {
-    public SimpleUpAndDownTradingMethodValidator() {
+public class SimpleUpAndDownTradingFormulaValidator implements TradingFormulaValidator {
+    public SimpleUpAndDownTradingFormulaValidator() {
     }
 
     @Override
@@ -36,7 +36,7 @@ public class SimpleUpAndDownTradingMethodValidator implements TradingMethodValid
     }
 
     @Override
-    public TradingMethod create(Map<String, Object> formData) {
-        return new SimpleUpAndDownTradingMethod((Double) formData.get("budget"), ((Number) formData.get("daysBackToCheck")).intValue());
+    public TradingFormula create(Map<String, Object> formData) {
+        return new SimpleUpAndDownTradingFormula((Double) formData.get("budget"), ((Number) formData.get("daysBackToCheck")).intValue());
     }
 }

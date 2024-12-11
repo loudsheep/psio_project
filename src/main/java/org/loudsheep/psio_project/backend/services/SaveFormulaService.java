@@ -3,7 +3,7 @@ package org.loudsheep.psio_project.backend.services;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
-import org.loudsheep.psio_project.backend.trading.TradingMethod;
+import org.loudsheep.psio_project.backend.trading.TradingFormula;
 
 import java.io.*;
 import java.lang.reflect.Type;
@@ -11,7 +11,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.*;
 
-public class SaveMethodService {
+public class SaveFormulaService {
     private static String createUserDataDirectory(String subDirName) throws IOException {
         // Get the project directory
         String projectDir = System.getProperty("user.dir");
@@ -72,7 +72,7 @@ public class SaveMethodService {
         return saved;
     }
 
-    public static List<Map<String, Object>> getSavedTradingMethods() {
+    public static List<Map<String, Object>> getSavedTradingFormulas() {
         try {
             String path = createUserDataDirectory("methods");
 
@@ -92,8 +92,8 @@ public class SaveMethodService {
         return new ArrayList<>();
     }
 
-    public static boolean saveTradingMethodToFile(TradingMethod method, String name) {
-        List<Map<String, Object>> saved = removeSavedWithName(getSavedTradingMethods(), name);
+    public static boolean saveTradingFormulaToFile(TradingFormula method, String name) {
+        List<Map<String, Object>> saved = removeSavedWithName(getSavedTradingFormulas(), name);
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Map<String, Object> data = method.getMethodParams();
@@ -111,8 +111,8 @@ public class SaveMethodService {
         }
     }
 
-    public static void deleteSavedMethod(String name) {
-        List<Map<String, Object>> saved = removeSavedWithName(getSavedTradingMethods(), name);
+    public static void deleteSavedFormula(String name) {
+        List<Map<String, Object>> saved = removeSavedWithName(getSavedTradingFormulas(), name);
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
             String path = createUserDataDirectory("methods");

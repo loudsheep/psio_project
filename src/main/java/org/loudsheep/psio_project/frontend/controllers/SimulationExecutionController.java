@@ -19,8 +19,8 @@ import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.models.SimulationResult;
 import org.loudsheep.psio_project.backend.models.Transaction;
 import org.loudsheep.psio_project.backend.observers.SimulationResultObserver;
-import org.loudsheep.psio_project.backend.services.TradingManager;
-import org.loudsheep.psio_project.backend.trading.TradingMethod;
+import org.loudsheep.psio_project.TradingController;
+import org.loudsheep.psio_project.backend.trading.TradingFormula;
 import org.loudsheep.psio_project.frontend.SceneManager;
 import org.loudsheep.psio_project.frontend.util.Epoch;
 
@@ -43,8 +43,8 @@ public class SimulationExecutionController implements SimulationResultObserver {
     private XYChart.Series<String, Number> sellTransactionSeries;
 
     public void initialize() {
-        StockData data = TradingManager.getInstance().getStockData();
-        TradingMethod strategy = TradingManager.getInstance().getTradingMethodInstance();
+        StockData data = TradingController.getInstance().getStockData();
+        TradingFormula strategy = TradingController.getInstance().getTradingFormulaInstance();
 
         this.strategyNameLabel.setText(strategy.getName());
         this.strategyDescriptionLabel.setText(strategy.getDescription());
@@ -65,7 +65,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
 
         this.chartPane.getChildren().add(chart);
 
-        TradingManager.getInstance().getTradingMethodInstance().addStrategyResultObserver(this);
+        TradingController.getInstance().getTradingFormulaInstance().addStrategyResultObserver(this);
     }
 
     private LineChart<String, Number> createChart(StockData stockData) {
@@ -161,15 +161,15 @@ public class SimulationExecutionController implements SimulationResultObserver {
     public void handleExecuteButtonClick(ActionEvent actionEvent) {
         this.buyTransactionSeries.getData().clear();
         this.sellTransactionSeries.getData().clear();
-        TradingManager.getInstance().execute();
+        TradingController.getInstance().execute();
     }
 
     public void handleStopTradingButton() {
-        TradingManager.getInstance().stopExecution();
+        TradingController.getInstance().stopExecution();
     }
 
     public void handleBackToSelection() {
-        TradingManager.getInstance().stopExecution();
+        TradingController.getInstance().stopExecution();
 
         SceneManager.switchScene("views/method-select-view.fxml", "Select Strategy");
     }
@@ -182,7 +182,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(name -> {
-            if (TradingManager.getInstance().saveCurrentMethodToFile(name)){
+            if (TradingController.getInstance().saveCurrentMethodToFile(name)){
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Saved successfully", ButtonType.OK);
                 alert.showAndWait();
             } else {

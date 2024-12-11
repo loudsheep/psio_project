@@ -5,7 +5,7 @@ import org.loudsheep.psio_project.backend.observers.SimulationResultObserver;
 
 import java.util.Map;
 
-public interface TradingMethod {
+public interface TradingFormula {
     String getDescription();
     String getName();
     String getSignature();

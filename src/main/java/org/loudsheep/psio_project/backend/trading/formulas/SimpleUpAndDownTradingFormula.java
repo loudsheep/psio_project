@@ -1,26 +1,40 @@
-package org.loudsheep.psio_project.backend.trading.methods;
+package org.loudsheep.psio_project.backend.trading.formulas;
 
 import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.models.SimulationResult;
 import org.loudsheep.psio_project.backend.observers.SimulationResultObserver;
-import org.loudsheep.psio_project.backend.trading.TradingMethod;
+import org.loudsheep.psio_project.backend.trading.TradingFormula;
 
 import java.util.Map;
 
-public class RandomTradingMethod implements TradingMethod {
-    private static final String name = "Random Strategy";
-    private static final String description = "Random decisions";
-
-    private final double budget;
-    private final SimulationResult result;
+public class SimpleUpAndDownTradingFormula implements TradingFormula {
+    private static final String name = "SimpleUpAndDown Strategy";
+    private static final String description = "Simple strategy that sells when downward trend, and buys when upward";
     private boolean stopExecution = false;
 
-    public RandomTradingMethod(double budget) {
+    private final double budget;
+    private final int daysBackToCheck;
+    private final SimulationResult result;
+
+    public SimpleUpAndDownTradingFormula(double budget, int daysBackToCheck) {
         this.budget = budget;
+        this.daysBackToCheck = daysBackToCheck;
         this.result = new SimulationResult(budget);
 
-        System.out.println("NEW RandomStrategy created");
+        System.out.println("NEW SimpleUpAndDownStrategy created");
+    }
+
+    private int getLastDaysTrend(StockData data, int currentDayIdx, int daysBack) {
+        int trend = 0;
+        DayStockData currentData = data.dailyData().get(currentDayIdx);
+        for (int i = currentDayIdx; i >= Math.max(0, currentDayIdx - daysBack); i--) {
+            DayStockData dayData = data.dailyData().get(i);
+
+            if (dayData.getOpen() == currentData.getOpen()) trend = 0;
+            else trend = (dayData.getOpen() - currentData.getOpen() > 0) ? 1 : -1;
+        }
+        return trend;
     }
 
     @Override
@@ -28,24 +42,17 @@ public class RandomTradingMethod implements TradingMethod {
         this.result.resetState();
         this.stopExecution = false;
 
+        System.out.println("EXECUTING THE STRATEGY");
         for (int i = 0; i < data.dailyData().size(); i++) {
             DayStockData dayData = data.dailyData().get(i);
             double price = dayData.getOpen();
 
-            double rand = Math.random();
-            // 10% -> buy Transaction
-            // 10% -> sell Transaction
-            // 80% -> no action at all
+            int trend = this.getLastDaysTrend(data, i, this.daysBackToCheck);
 
-            if (rand < 0.1) {
-                int maxToBuy = this.result.maxStockToBuy(price);
-                int randomBuyAmount = (int) Math.floor(Math.random() * maxToBuy);
-
-                this.result.buyStock(randomBuyAmount, price, dayData.getTimestamp());
-            } else if (rand < 0.2) {
-                int randomToSell = (int) Math.floor(this.result.getStockOwned() * Math.random());
-
-                this.result.sellStock(randomToSell, price, dayData.getTimestamp());
+            if (trend > 0) {
+                this.result.buyStock(this.result.maxStockToBuy(price), price, dayData.getTimestamp());
+            } else {
+                this.result.sellAllStock(price, dayData.getTimestamp());
             }
 
             try {
@@ -65,6 +72,7 @@ public class RandomTradingMethod implements TradingMethod {
     @Override
     public boolean isReadyToExecute() {
         if (this.budget <= 0) return false;
+        if (this.daysBackToCheck <= 0) return false;
         return true;
     }
 
@@ -85,17 +93,17 @@ public class RandomTradingMethod implements TradingMethod {
 
     @Override
     public String getDescription() {
-        return RandomTradingMethod.description;
+        return SimpleUpAndDownTradingFormula.description;
     }
 
     @Override
     public String getName() {
-        return RandomTradingMethod.name;
+        return SimpleUpAndDownTradingFormula.name;
     }
 
     @Override
     public String getSignature() {
-        return "Random";
+        return "SimpleUpAndDown";
     }
 
     @Override
@@ -103,6 +111,7 @@ public class RandomTradingMethod implements TradingMethod {
         Map<String, Object> result = new java.util.HashMap<>();
 
         result.put("budget", budget);
+        result.put("daysBackToCheck", daysBackToCheck);
 
         return result;
     }

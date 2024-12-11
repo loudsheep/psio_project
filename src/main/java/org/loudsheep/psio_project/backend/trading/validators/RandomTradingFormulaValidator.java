@@ -1,15 +1,15 @@
 package org.loudsheep.psio_project.backend.trading.validators;
 
-import org.loudsheep.psio_project.backend.trading.TradingMethod;
-import org.loudsheep.psio_project.backend.trading.TradingMethodValidator;
-import org.loudsheep.psio_project.backend.trading.methods.RandomTradingMethod;
+import org.loudsheep.psio_project.backend.trading.TradingFormula;
+import org.loudsheep.psio_project.backend.trading.TradingFormulaValidator;
+import org.loudsheep.psio_project.backend.trading.formulas.RandomTradingFormula;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class RandomTradingMethodValidator implements TradingMethodValidator {
-    public RandomTradingMethodValidator() {
+public class RandomTradingFormulaValidator implements TradingFormulaValidator {
+    public RandomTradingFormulaValidator() {
     }
 
     @Override
@@ -28,7 +28,7 @@ public class RandomTradingMethodValidator implements TradingMethodValidator {
     }
 
     @Override
-    public TradingMethod create(Map<String, Object> formData) {
-        return new RandomTradingMethod((Double) formData.get("budget"));
+    public TradingFormula create(Map<String, Object> formData) {
+        return new RandomTradingFormula((Double) formData.get("budget"));
     }
 }

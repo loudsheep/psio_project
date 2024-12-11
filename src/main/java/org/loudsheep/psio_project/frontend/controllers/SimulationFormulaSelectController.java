@@ -13,18 +13,17 @@ import org.loudsheep.psio_project.App;
 import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.observers.StockDataObserver;
-import org.loudsheep.psio_project.backend.services.SaveMethodService;
-import org.loudsheep.psio_project.backend.services.TradingManager;
-import org.loudsheep.psio_project.backend.trading.TradingMethod;
+import org.loudsheep.psio_project.backend.services.SaveFormulaService;
+import org.loudsheep.psio_project.TradingController;
+import org.loudsheep.psio_project.backend.trading.TradingFormula;
 import org.loudsheep.psio_project.frontend.SceneManager;
 import org.loudsheep.psio_project.frontend.util.Epoch;
 
 import java.time.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 
-public class SimulationMethodSelectController implements StockDataObserver {
+public class SimulationFormulaSelectController implements StockDataObserver {
     public VBox parametersVBox;
     public VBox savedVbox;
 
@@ -43,8 +42,8 @@ public class SimulationMethodSelectController implements StockDataObserver {
 
     // Handles getting stock data
     public void initialize() {
-        TradingManager.getInstance().addStockDataObserver(this);
-        StockData data = TradingManager.getInstance().getStockData();
+        TradingController.getInstance().addStockDataObserver(this);
+        StockData data = TradingController.getInstance().getStockData();
         if (data != null) {
             this.onDataChanged(data);
             this.symbolField.setText(data.symbol().toUpperCase());
@@ -62,7 +61,7 @@ public class SimulationMethodSelectController implements StockDataObserver {
 
     // show selected method params
     private void showMethodParams() {
-        TradingMethod method = TradingManager.getInstance().getTradingMethodInstance();
+        TradingFormula method = TradingController.getInstance().getTradingFormulaInstance();
         if (method != null) {
             this.methodMenuButton.setText(method.getName());
 
@@ -84,16 +83,16 @@ public class SimulationMethodSelectController implements StockDataObserver {
     }
 
     private void editCurrentMethod() {
-        if (TradingManager.getInstance().getTradingMethodInstance() == null) return;
+        if (TradingController.getInstance().getTradingFormulaInstance() == null) return;
 
-        String methodName = TradingManager.getInstance().getTradingMethodInstance().getSignature();
-        this.loadFormForMethod(methodName, TradingManager.getInstance().getTradingMethodInstance().getMethodParams());
+        String methodName = TradingController.getInstance().getTradingFormulaInstance().getSignature();
+        this.loadFormForMethod(methodName, TradingController.getInstance().getTradingFormulaInstance().getMethodParams());
     }
 
     // load saved method
     private void loadMethod(Map<String, Object> method) {
         String name = method.get("strategyName").toString();
-        String[] errors = TradingManager.getInstance().setMethod(name, method);
+        String[] errors = TradingController.getInstance().setMethod(name, method);
         if (errors.length > 0) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Error: " + errors[0], ButtonType.OK);
             alert.showAndWait();
@@ -104,13 +103,13 @@ public class SimulationMethodSelectController implements StockDataObserver {
 
     // delete save method from file
     private void deleteMethod(Map<String, Object> method) {
-        SaveMethodService.deleteSavedMethod(method.get("name").toString());
+        SaveFormulaService.deleteSavedFormula(method.get("name").toString());
         this.showSavedMethods();
     }
 
     // list of saved methods and load/delete buttons
     private void showSavedMethods() {
-        List<Map<String, Object>> methods = SaveMethodService.getSavedTradingMethods();
+        List<Map<String, Object>> methods = SaveFormulaService.getSavedTradingFormulas();
 
         this.savedVbox.getChildren().clear();
         for (Map<String, Object> method : methods) {
@@ -202,7 +201,7 @@ public class SimulationMethodSelectController implements StockDataObserver {
         long startEpoch = Epoch.toEpochSeconds(startDateField.getValue().getYear(), startDateField.getValue().getMonthValue(), startDateField.getValue().getDayOfMonth());
         long endEpoch = Epoch.toEpochSeconds(endDateField.getValue().getYear(), endDateField.getValue().getMonthValue(), endDateField.getValue().getDayOfMonth());
 
-        TradingManager.getInstance().setStockData(symbolField.getText(), startEpoch, endEpoch);
+        TradingController.getInstance().setStockData(symbolField.getText(), startEpoch, endEpoch);
         this.errorLabel.setText("");
     }
 
@@ -233,7 +232,7 @@ public class SimulationMethodSelectController implements StockDataObserver {
     // check if method and stock data are set, and show execution view
     @FXML
     public void handleSaveButtonClick() {
-        if (!TradingManager.getInstance().isReadyToExecute()) {
+        if (!TradingController.getInstance().isReadyToExecute()) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Not enough data to execute the strategy", ButtonType.OK);
             alert.showAndWait();
         } else {
