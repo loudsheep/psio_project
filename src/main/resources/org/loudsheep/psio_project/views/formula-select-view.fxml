@@ -7,11 +7,11 @@
 
 <AnchorPane prefHeight="460.0" prefWidth="851.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.loudsheep.psio_project.frontend.controllers.SimulationFormulaSelectController">
     <children>
-        <MenuButton fx:id="methodMenuButton" layoutX="13.0" layoutY="14.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="168.0" text="Select strategy">
+        <MenuButton fx:id="formulaMenuButton" layoutX="13.0" layoutY="14.0" mnemonicParsing="false" prefHeight="26.0" prefWidth="168.0" text="Select strategy">
             <items>
-                <MenuItem fx:id="simpleUDMethodButton" mnemonicParsing="false" onAction="#handleSimpleMethod" text="Simple Up&amp;Down" />
-            <MenuItem fx:id="randomMethodButton" mnemonicParsing="false" onAction="#handleRandomMethod" text="Random Strategy" />
-            <MenuItem fx:id="multifusionMethodButton" mnemonicParsing="false" onAction="#handleMultiFusionMethod" text="Multi-indicator fusion" />
+                <MenuItem fx:id="simpleUDFormulaButton" mnemonicParsing="false" onAction="#handleSimpleMethod" text="Simple Up&amp;Down" />
+            <MenuItem fx:id="randomFormulaButton" mnemonicParsing="false" onAction="#handleRandomMethod" text="Random Strategy" />
+            <MenuItem fx:id="multifusionFormulaButton" mnemonicParsing="false" onAction="#handleMultiFusionMethod" text="Multi-indicator fusion" />
             </items>
         </MenuButton>
       <Label layoutX="14.0" layoutY="56.0" text="Strategy params:" />

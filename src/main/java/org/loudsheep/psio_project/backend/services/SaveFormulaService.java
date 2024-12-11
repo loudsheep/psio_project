@@ -76,9 +76,9 @@ public class SaveFormulaService {
         try {
             String path = createUserDataDirectory("methods");
 
-            if (!fileExists(path, "methods.json")) return new ArrayList<>();
+            if (!fileExists(path, "formulas.json")) return new ArrayList<>();
 
-            String data = readFromFile(path, "methods.json");
+            String data = readFromFile(path, "formulas.json");
 
             Gson gson = new Gson();
             Type listType = new TypeToken<List<Map<String, Object>>>() {
@@ -97,14 +97,14 @@ public class SaveFormulaService {
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         Map<String, Object> data = method.getMethodParams();
-        data.put("strategyName", method.getSignature());
+        data.put("formulaName", method.getSignature());
         data.put("name", name);
 
         saved.add(data);
 
         try {
             String path = createUserDataDirectory("methods");
-            saveToFile(path, "methods.json", gson.toJson(saved));
+            saveToFile(path, "formulas.json", gson.toJson(saved));
             return true;
         } catch (IOException _) {
             return false;
@@ -116,7 +116,7 @@ public class SaveFormulaService {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         try {
             String path = createUserDataDirectory("methods");
-            saveToFile(path, "methods.json", gson.toJson(saved));
+            saveToFile(path, "formulas.json", gson.toJson(saved));
         } catch (IOException _) {
         }
     }

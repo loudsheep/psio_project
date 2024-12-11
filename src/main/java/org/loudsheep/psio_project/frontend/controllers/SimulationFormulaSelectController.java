@@ -35,10 +35,10 @@ public class SimulationFormulaSelectController implements StockDataObserver {
     public LineChart lineChart;
 
     // menu items of different methods
-    public MenuButton methodMenuButton;
-    public MenuItem randomMethodButton;
-    public MenuItem simpleUDMethodButton;
-    public MenuItem multifusionMethodButton;
+    public MenuButton formulaMenuButton;
+    public MenuItem randomFormulaButton;
+    public MenuItem simpleUDFormulaButton;
+    public MenuItem multifusionFormulaButton;
 
     // Handles getting stock data
     public void initialize() {
@@ -53,57 +53,57 @@ public class SimulationFormulaSelectController implements StockDataObserver {
             this.endDateField.setValue(Instant.ofEpochSecond(data.getLastDataPointTimestamp()).atZone(ZoneId.systemDefault()).toLocalDate());
         }
 
-        this.showMethodParams();
+        this.showFormulaParams();
         this.showSavedMethods();
 
         this.errorLabel.setText("");
     }
 
     // show selected method params
-    private void showMethodParams() {
-        TradingFormula method = TradingController.getInstance().getTradingFormulaInstance();
-        if (method != null) {
-            this.methodMenuButton.setText(method.getName());
+    private void showFormulaParams() {
+        TradingFormula formula = TradingController.getInstance().getTradingFormulaInstance();
+        if (formula != null) {
+            this.formulaMenuButton.setText(formula.getName());
 
             Label tmp = new Label();
             tmp.setWrapText(true);
 
             String text = "";
-            for (Map.Entry<String, Object> set : method.getMethodParams().entrySet()) {
+            for (Map.Entry<String, Object> set : formula.getMethodParams().entrySet()) {
                 text += set.getKey() + ": " + set.getValue() + "\n";
             }
             tmp.setText(text);
 
             Button editBtn = new Button("Edit");
-            editBtn.setOnAction(e -> this.editCurrentMethod());
+            editBtn.setOnAction(e -> this.editCurrentFormula());
 
             parametersVBox.getChildren().clear();
             parametersVBox.getChildren().addAll(tmp, editBtn);
         }
     }
 
-    private void editCurrentMethod() {
+    private void editCurrentFormula() {
         if (TradingController.getInstance().getTradingFormulaInstance() == null) return;
 
-        String methodName = TradingController.getInstance().getTradingFormulaInstance().getSignature();
-        this.loadFormForMethod(methodName, TradingController.getInstance().getTradingFormulaInstance().getMethodParams());
+        String formulaName = TradingController.getInstance().getTradingFormulaInstance().getSignature();
+        this.loadFormForMethod(formulaName, TradingController.getInstance().getTradingFormulaInstance().getMethodParams());
     }
 
-    // load saved method
-    private void loadMethod(Map<String, Object> method) {
-        String name = method.get("strategyName").toString();
-        String[] errors = TradingController.getInstance().setMethod(name, method);
+    // load saved formula
+    private void loadFormula(Map<String, Object> formula) {
+        String name = formula.get("formulaName").toString();
+        String[] errors = TradingController.getInstance().setMethod(name, formula);
         if (errors.length > 0) {
             Alert alert = new Alert(Alert.AlertType.ERROR, "Error: " + errors[0], ButtonType.OK);
             alert.showAndWait();
         } else {
-            this.showMethodParams();
+            this.showFormulaParams();
         }
     }
 
-    // delete save method from file
-    private void deleteMethod(Map<String, Object> method) {
-        SaveFormulaService.deleteSavedFormula(method.get("name").toString());
+    // delete save formula from file
+    private void deleteFormula(Map<String, Object> formula) {
+        SaveFormulaService.deleteSavedFormula(formula.get("name").toString());
         this.showSavedMethods();
     }
 
@@ -116,9 +116,9 @@ public class SimulationFormulaSelectController implements StockDataObserver {
             VBox box = new VBox();
 
             Button loadBtn = new Button("Load");
-            loadBtn.setOnAction(e -> loadMethod(method));
+            loadBtn.setOnAction(e -> loadFormula(method));
             Button deleteBtn = new Button("Delete");
-            deleteBtn.setOnAction(e -> deleteMethod(method));
+            deleteBtn.setOnAction(e -> deleteFormula(method));
             HBox hbox = new HBox(loadBtn, deleteBtn);
 
 
@@ -150,19 +150,19 @@ public class SimulationFormulaSelectController implements StockDataObserver {
     @FXML
     private void handleSimpleMethod() {
         loadFormForMethod("SimpleUpAndDown", Map.of());
-        methodMenuButton.setText(simpleUDMethodButton.getText());
+        formulaMenuButton.setText(simpleUDFormulaButton.getText());
     }
 
     @FXML
     public void handleRandomMethod() {
         loadFormForMethod("Random", Map.of());
-        methodMenuButton.setText(randomMethodButton.getText());
+        formulaMenuButton.setText(randomFormulaButton.getText());
     }
 
     @FXML
     public void handleMultiFusionMethod() {
         loadFormForMethod("MultiIndicatorFusion", Map.of());
-        methodMenuButton.setText(randomMethodButton.getText());
+        formulaMenuButton.setText(randomFormulaButton.getText());
     }
 
     // load and show params form for specified method
@@ -188,7 +188,7 @@ public class SimulationFormulaSelectController implements StockDataObserver {
 
     // method params form callback
     private void handleFormSubmit(Map<String, Object> formData) {
-        showMethodParams();
+        showFormulaParams();
     }
 
     // set stock data

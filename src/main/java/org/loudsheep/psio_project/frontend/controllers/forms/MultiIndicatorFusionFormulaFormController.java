@@ -16,23 +16,31 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
-public class SimpleMethodFormController implements FormControllerInterface, FormErrorCallback {
+public class MultiIndicatorFusionFormulaFormController implements FormControllerInterface, FormErrorCallback {
 
     public VBox VBoxPane;
-    public TextField daysField;
     public TextField budgetField;
+    public TextField rsiPeriodField;
+    public TextField shortEmaField;
+    public TextField longEmaField;
+    public TextField bollingerPeriodField;
+    public TextField bollingerMultiplierField;
     private Label errorLabel;
 
     private FormSubmitCallback submitCallback;
 
     @FXML
     private void initialize() {
-        // restrict input to integers using a TextFormatter
+        // restrict input to integers for periods and doubles for budget/multiplier
         UnaryOperator<TextFormatter.Change> integerFilter = change -> change.getControlNewText().matches("-?\\d*") ? change : null;
         UnaryOperator<TextFormatter.Change> doubleFilter = change -> change.getControlNewText().matches("-?\\d*(\\.\\d*)?") ? change : null;
 
-        daysField.setTextFormatter(new TextFormatter<>(integerFilter));
         budgetField.setTextFormatter(new TextFormatter<>(doubleFilter));
+        rsiPeriodField.setTextFormatter(new TextFormatter<>(integerFilter));
+        shortEmaField.setTextFormatter(new TextFormatter<>(integerFilter));
+        longEmaField.setTextFormatter(new TextFormatter<>(integerFilter));
+        bollingerPeriodField.setTextFormatter(new TextFormatter<>(integerFilter));
+        bollingerMultiplierField.setTextFormatter(new TextFormatter<>(doubleFilter));
     }
 
     @Override
@@ -40,8 +48,20 @@ public class SimpleMethodFormController implements FormControllerInterface, Form
         if (params.containsKey("budget")) {
             this.budgetField.setText(params.get("budget").toString());
         }
-        if (params.containsKey("daysBackToCheck")) {
-            this.daysField.setText(params.get("daysBackToCheck").toString());
+        if (params.containsKey("rsiPeriod")) {
+            this.rsiPeriodField.setText(params.get("rsiPeriod").toString());
+        }
+        if (params.containsKey("shortEmaPeriod")) {
+            this.shortEmaField.setText(params.get("shortEmaPeriod").toString());
+        }
+        if (params.containsKey("longEmaPeriod")) {
+            this.longEmaField.setText(params.get("longEmaPeriod").toString());
+        }
+        if (params.containsKey("bollingerPeriod")) {
+            this.bollingerPeriodField.setText(params.get("bollingerPeriod").toString());
+        }
+        if (params.containsKey("bollingerMultiplier")) {
+            this.bollingerMultiplierField.setText(params.get("bollingerMultiplier").toString());
         }
     }
 
@@ -62,7 +82,7 @@ public class SimpleMethodFormController implements FormControllerInterface, Form
             this.errorLabel = new Label(text);
             this.errorLabel.setTextFill(Color.RED);
             this.errorLabel.setWrapText(true);
-            this.VBoxPane.getChildren().add(4, this.errorLabel);
+            this.VBoxPane.getChildren().add(this.VBoxPane.getChildren().size() - 1, this.errorLabel);
         } else {
             this.errorLabel.setText(text);
         }
@@ -72,11 +92,18 @@ public class SimpleMethodFormController implements FormControllerInterface, Form
     private void handleSubmit() throws Exception {
         if (submitCallback != null) {
             Map<String, Object> formData = new HashMap<>();
-            formData.put("daysBackToCheck", Integer.parseInt(daysField.getText()));
             formData.put("budget", Double.parseDouble(budgetField.getText()));
+            formData.put("rsiPeriod", Integer.parseInt(rsiPeriodField.getText()));
+            formData.put("shortEmaPeriod", Integer.parseInt(shortEmaField.getText()));
+            formData.put("longEmaPeriod", Integer.parseInt(longEmaField.getText()));
+            formData.put("bollingerPeriod", Integer.parseInt(bollingerPeriodField.getText()));
+            formData.put("bollingerMultiplier", Double.parseDouble(bollingerMultiplierField.getText()));
 
-            String[] errors = TradingController.getInstance().setMethod("SimpleUpAndDown", formData);
-            if (errors.length > 0) this.setError(errors[0]);
+            String[] errors = TradingController.getInstance().setMethod("MultiIndicatorFusion", formData);
+            if (errors.length > 0) {
+                this.setError(errors[0]);
+                return;
+            }
 
             submitCallback.onSubmit(formData);
         }

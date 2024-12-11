@@ -1,6 +1,5 @@
 package org.loudsheep.psio_project.frontend.controllers.forms;
 
-
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -17,9 +16,10 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.UnaryOperator;
 
-public class RandomMethodFormController implements FormControllerInterface, FormErrorCallback {
+public class SimpleFormulaFormController implements FormControllerInterface, FormErrorCallback {
 
     public VBox VBoxPane;
+    public TextField daysField;
     public TextField budgetField;
     private Label errorLabel;
 
@@ -28,8 +28,10 @@ public class RandomMethodFormController implements FormControllerInterface, Form
     @FXML
     private void initialize() {
         // restrict input to integers using a TextFormatter
+        UnaryOperator<TextFormatter.Change> integerFilter = change -> change.getControlNewText().matches("-?\\d*") ? change : null;
         UnaryOperator<TextFormatter.Change> doubleFilter = change -> change.getControlNewText().matches("-?\\d*(\\.\\d*)?") ? change : null;
 
+        daysField.setTextFormatter(new TextFormatter<>(integerFilter));
         budgetField.setTextFormatter(new TextFormatter<>(doubleFilter));
     }
 
@@ -37,6 +39,9 @@ public class RandomMethodFormController implements FormControllerInterface, Form
     public void setParams(Map<String, Object> params) {
         if (params.containsKey("budget")) {
             this.budgetField.setText(params.get("budget").toString());
+        }
+        if (params.containsKey("daysBackToCheck")) {
+            this.daysField.setText(params.get("daysBackToCheck").toString());
         }
     }
 
@@ -67,9 +72,10 @@ public class RandomMethodFormController implements FormControllerInterface, Form
     private void handleSubmit() throws Exception {
         if (submitCallback != null) {
             Map<String, Object> formData = new HashMap<>();
+            formData.put("daysBackToCheck", Integer.parseInt(daysField.getText()));
             formData.put("budget", Double.parseDouble(budgetField.getText()));
 
-            String[] errors = TradingController.getInstance().setMethod("Random", formData);
+            String[] errors = TradingController.getInstance().setMethod("SimpleUpAndDown", formData);
             if (errors.length > 0) this.setError(errors[0]);
 
             submitCallback.onSubmit(formData);
