@@ -7,6 +7,7 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.loudsheep.psio_project.TradingController;
+import org.loudsheep.psio_project.backend.util.NumberParser;
 import org.loudsheep.psio_project.frontend.controllers.FormControllerInterface;
 import org.loudsheep.psio_project.frontend.interfaces.FormErrorCallback;
 import org.loudsheep.psio_project.frontend.interfaces.FormSubmitCallback;
@@ -56,7 +57,7 @@ public class SimpleFormulaFormController implements FormControllerInterface, For
             this.errorLabel = new Label(text);
             this.errorLabel.setTextFill(Color.RED);
             this.errorLabel.setWrapText(true);
-            this.VBoxPane.getChildren().add(4, this.errorLabel);
+            this.VBoxPane.getChildren().add(this.VBoxPane.getChildren().size() - 1, this.errorLabel);
         } else {
             this.errorLabel.setText(text);
         }
@@ -66,7 +67,7 @@ public class SimpleFormulaFormController implements FormControllerInterface, For
     private void handleSubmit() throws Exception {
         if (submitCallback != null) {
             Map<String, Object> formData = new HashMap<>();
-            formData.put("daysBackToCheck", Integer.parseInt(daysField.getText()));
+            formData.put("daysBackToCheck", NumberParser.parseIntOrNull(daysField.getText()));
 
             String[] errors = TradingController.getInstance().setMethod("SimpleUpAndDown", formData);
             if (errors.length > 0) this.setError(errors[0]);

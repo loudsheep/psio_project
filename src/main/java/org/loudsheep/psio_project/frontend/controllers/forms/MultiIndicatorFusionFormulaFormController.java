@@ -7,6 +7,7 @@ import javafx.scene.control.TextFormatter;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import org.loudsheep.psio_project.TradingController;
+import org.loudsheep.psio_project.backend.util.NumberParser;
 import org.loudsheep.psio_project.frontend.controllers.FormControllerInterface;
 import org.loudsheep.psio_project.frontend.interfaces.FormErrorCallback;
 import org.loudsheep.psio_project.frontend.interfaces.FormSubmitCallback;
@@ -87,11 +88,11 @@ public class MultiIndicatorFusionFormulaFormController implements FormController
     private void handleSubmit() throws Exception {
         if (submitCallback != null) {
             Map<String, Object> formData = new HashMap<>();
-            formData.put("rsiPeriod", Integer.parseInt(rsiPeriodField.getText()));
-            formData.put("shortEmaPeriod", Integer.parseInt(shortEmaField.getText()));
-            formData.put("longEmaPeriod", Integer.parseInt(longEmaField.getText()));
-            formData.put("bollingerPeriod", Integer.parseInt(bollingerPeriodField.getText()));
-            formData.put("bollingerMultiplier", Double.parseDouble(bollingerMultiplierField.getText()));
+            formData.put("rsiPeriod", NumberParser.parseIntOrNull(rsiPeriodField.getText()));
+            formData.put("shortEmaPeriod", NumberParser.parseIntOrNull(shortEmaField.getText()));
+            formData.put("longEmaPeriod", NumberParser.parseIntOrNull(longEmaField.getText()));
+            formData.put("bollingerPeriod", NumberParser.parseIntOrNull(bollingerPeriodField.getText()));
+            formData.put("bollingerMultiplier", NumberParser.parseDoubleOrNull(bollingerMultiplierField.getText()));
 
             String[] errors = TradingController.getInstance().setMethod("MultiIndicatorFusion", formData);
             if (errors.length > 0) {
