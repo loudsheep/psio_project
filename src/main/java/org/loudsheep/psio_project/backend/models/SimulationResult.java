@@ -8,7 +8,7 @@ import java.util.List;
 public class SimulationResult {
     private final List<Transaction> transactions = new ArrayList<>();
     // initial money available
-    private final double initialBudget;
+    private double initialBudget;
     // current money available
     private double currentBudget;
     private int stockOwned;
@@ -111,6 +111,11 @@ public class SimulationResult {
         this.currentBudget = this.initialBudget;
         this.transactions.clear();
         this.stockOwned = 0;
+    }
+
+    public void resetState(double initialBudget) {
+        this.initialBudget = Math.max(initialBudget, 0);
+        this.resetState();
     }
 
     public double getInitialBudget() {

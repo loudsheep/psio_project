@@ -15,7 +15,7 @@ public class MultiIndicatorFusionTradingFormula implements TradingFormula {
     private static final String description = "Combines RSI, EMA, Bollinger Bands, and MACD for complex trading decisions";
     private boolean stopExecution = false;
 
-    private final double budget;
+    private double budget;
     private final int rsiPeriod;
     private final int shortEmaPeriod;
     private final int longEmaPeriod;
@@ -23,14 +23,13 @@ public class MultiIndicatorFusionTradingFormula implements TradingFormula {
     private final double bollingerMultiplier;
     private final SimulationResult result;
 
-    public MultiIndicatorFusionTradingFormula(double budget, int rsiPeriod, int shortEmaPeriod, int longEmaPeriod, int bollingerPeriod, double bollingerMultiplier) {
-        this.budget = budget;
+    public MultiIndicatorFusionTradingFormula(int rsiPeriod, int shortEmaPeriod, int longEmaPeriod, int bollingerPeriod, double bollingerMultiplier) {
+        this.result = new SimulationResult(0);
         this.rsiPeriod = rsiPeriod;
         this.shortEmaPeriod = shortEmaPeriod;
         this.longEmaPeriod = longEmaPeriod;
         this.bollingerPeriod = bollingerPeriod;
         this.bollingerMultiplier = bollingerMultiplier;
-        this.result = new SimulationResult(budget);
     }
 
     private double calculateEMA(List<Double> prices, int period, int currentIndex) {
@@ -89,8 +88,10 @@ public class MultiIndicatorFusionTradingFormula implements TradingFormula {
     }
 
     @Override
-    public void execute(StockData data) {
-        this.result.resetState();
+    public void execute(StockData data, double budget) {
+        this.budget = Math.max(budget, 0.0);
+        this.result.resetState(this.budget);
+
         this.stopExecution = false;
 
         List<Double> prices = new ArrayList<>();
@@ -187,7 +188,6 @@ public class MultiIndicatorFusionTradingFormula implements TradingFormula {
     public Map<String, Object> getMethodParams() {
         Map<String, Object> result = new java.util.HashMap<>();
 
-        result.put("budget", budget);
         result.put("rsiPeriod", rsiPeriod);
         result.put("shortEmaPeriod", shortEmaPeriod);
         result.put("longEmaPeriod", longEmaPeriod);

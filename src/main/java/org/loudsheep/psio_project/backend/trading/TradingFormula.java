@@ -11,7 +11,7 @@ public interface TradingFormula {
     String getSignature();
     Map<String, Object> getMethodParams();
 
-    void execute(StockData data);
+    void execute(StockData data, double budget);
     boolean isReadyToExecute();
     void stopExecution();
 

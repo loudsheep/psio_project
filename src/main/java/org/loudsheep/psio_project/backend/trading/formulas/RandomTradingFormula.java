@@ -12,20 +12,20 @@ public class RandomTradingFormula implements TradingFormula {
     private static final String name = "Random Strategy";
     private static final String description = "Random decisions";
 
-    private final double budget;
+    private double budget;
     private final SimulationResult result;
     private boolean stopExecution = false;
 
-    public RandomTradingFormula(double budget) {
-        this.budget = budget;
-        this.result = new SimulationResult(budget);
+    public RandomTradingFormula() {
+        this.result = new SimulationResult(0);
 
         System.out.println("NEW RandomStrategy created");
     }
 
     @Override
-    public void execute(StockData data) {
-        this.result.resetState();
+    public void execute(StockData data, double budget) {
+        this.budget = Math.max(budget, 0.0);
+        this.result.resetState(this.budget);
         this.stopExecution = false;
 
         for (int i = 0; i < data.dailyData().size(); i++) {
@@ -100,10 +100,6 @@ public class RandomTradingFormula implements TradingFormula {
 
     @Override
     public Map<String, Object> getMethodParams() {
-        Map<String, Object> result = new java.util.HashMap<>();
-
-        result.put("budget", budget);
-
-        return result;
+        return new java.util.HashMap<>();
     }
 }

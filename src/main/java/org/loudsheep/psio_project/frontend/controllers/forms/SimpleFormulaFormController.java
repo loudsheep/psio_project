@@ -20,7 +20,6 @@ public class SimpleFormulaFormController implements FormControllerInterface, For
 
     public VBox VBoxPane;
     public TextField daysField;
-    public TextField budgetField;
     private Label errorLabel;
 
     private FormSubmitCallback submitCallback;
@@ -29,17 +28,12 @@ public class SimpleFormulaFormController implements FormControllerInterface, For
     private void initialize() {
         // restrict input to integers using a TextFormatter
         UnaryOperator<TextFormatter.Change> integerFilter = change -> change.getControlNewText().matches("-?\\d*") ? change : null;
-        UnaryOperator<TextFormatter.Change> doubleFilter = change -> change.getControlNewText().matches("-?\\d*(\\.\\d*)?") ? change : null;
 
         daysField.setTextFormatter(new TextFormatter<>(integerFilter));
-        budgetField.setTextFormatter(new TextFormatter<>(doubleFilter));
     }
 
     @Override
     public void setParams(Map<String, Object> params) {
-        if (params.containsKey("budget")) {
-            this.budgetField.setText(params.get("budget").toString());
-        }
         if (params.containsKey("daysBackToCheck")) {
             this.daysField.setText(params.get("daysBackToCheck").toString());
         }
@@ -73,7 +67,6 @@ public class SimpleFormulaFormController implements FormControllerInterface, For
         if (submitCallback != null) {
             Map<String, Object> formData = new HashMap<>();
             formData.put("daysBackToCheck", Integer.parseInt(daysField.getText()));
-            formData.put("budget", Double.parseDouble(budgetField.getText()));
 
             String[] errors = TradingController.getInstance().setMethod("SimpleUpAndDown", formData);
             if (errors.length > 0) this.setError(errors[0]);

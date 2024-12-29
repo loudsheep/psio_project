@@ -20,24 +20,16 @@ import java.util.function.UnaryOperator;
 public class RandomFormulaFormController implements FormControllerInterface, FormErrorCallback {
 
     public VBox VBoxPane;
-    public TextField budgetField;
     private Label errorLabel;
 
     private FormSubmitCallback submitCallback;
 
     @FXML
     private void initialize() {
-        // restrict input to integers using a TextFormatter
-        UnaryOperator<TextFormatter.Change> doubleFilter = change -> change.getControlNewText().matches("-?\\d*(\\.\\d*)?") ? change : null;
-
-        budgetField.setTextFormatter(new TextFormatter<>(doubleFilter));
     }
 
     @Override
     public void setParams(Map<String, Object> params) {
-        if (params.containsKey("budget")) {
-            this.budgetField.setText(params.get("budget").toString());
-        }
     }
 
     @Override
@@ -67,7 +59,6 @@ public class RandomFormulaFormController implements FormControllerInterface, For
     private void handleSubmit() throws Exception {
         if (submitCallback != null) {
             Map<String, Object> formData = new HashMap<>();
-            formData.put("budget", Double.parseDouble(budgetField.getText()));
 
             String[] errors = TradingController.getInstance().setMethod("Random", formData);
             if (errors.length > 0) this.setError(errors[0]);

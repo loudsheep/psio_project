@@ -4,10 +4,8 @@
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox fx:id="VBoxPane" prefHeight="139.0" prefWidth="150.0" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.loudsheep.psio_project.frontend.controllers.forms.SimpleFormulaFormController">
+<VBox fx:id="VBoxPane" prefHeight="139.0" prefWidth="150.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.loudsheep.psio_project.frontend.controllers.forms.SimpleFormulaFormController">
     <children>
-      <Label text="Simulation budget" />
-      <TextField fx:id="budgetField" promptText="Enter a number" />
         <Label text="Trend number of days" />
         <TextField fx:id="daysField" promptText="Enter a number">
             <VBox.margin>

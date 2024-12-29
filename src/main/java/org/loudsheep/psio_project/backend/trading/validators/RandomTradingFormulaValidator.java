@@ -14,21 +14,11 @@ public class RandomTradingFormulaValidator implements TradingFormulaValidator {
 
     @Override
     public String[] validate(Map<String, Object> formData) {
-        List<String> errors = new ArrayList<>();
-
-        if (!formData.containsKey("budget") || !(formData.get("budget") instanceof Double)) {
-            errors.add("Budget is required and must be a number value.");
-        } else {
-            if ((double) formData.get("budget") <= 0) {
-                errors.add("Budget must be a positive number");
-            }
-        }
-
-        return errors.toArray(new String[0]);
+        return new String[0];
     }
 
     @Override
     public TradingFormula create(Map<String, Object> formData) {
-        return new RandomTradingFormula((Double) formData.get("budget"));
+        return new RandomTradingFormula();
     }
 }

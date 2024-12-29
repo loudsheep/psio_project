@@ -20,10 +20,60 @@ public class TradingController implements StockDataObserver {
     private StockData stockData;
     private TradingFormula tradingFormulaInstance;
     private Thread simulationThread;
+    private double simulationBudget;
 
     private TradingController() {
         this.stockService = new StockService();
         this.stockService.addObserver(this);
+    }
+
+    // check if all instance are initialized and ready to execute the simulation
+    public boolean isReadyToExecute() {
+        if (this.tradingFormulaInstance == null || !this.tradingFormulaInstance.isReadyToExecute()) return false;
+        return this.stockData != null;
+    }
+
+    // execute the simulation
+    public void execute() {
+        if (!this.isReadyToExecute()) return;
+        this.stopExecution();
+
+        // execute trading simulation async in new thread
+        this.simulationThread = new Thread(() -> this.tradingFormulaInstance.execute(this.stockData, this.simulationBudget));
+        this.simulationThread.start();
+    }
+
+    // halt execution of the simulation
+    public void stopExecution() {
+        if (this.tradingFormulaInstance != null) {
+            this.tradingFormulaInstance.stopExecution();
+        }
+        if (this.simulationThread != null) {
+            try {
+                this.simulationThread.join();
+            } catch (InterruptedException e) {
+                return;
+            }
+            this.simulationThread = null;
+        }
+    }
+
+    // save current method to file
+    public boolean saveCurrentMethodToFile(String name) {
+        if (this.tradingFormulaInstance == null) return false;
+
+        return SaveFormulaService.saveTradingFormulaToFile(this.tradingFormulaInstance, name);
+    }
+
+    // receive new stock data
+    @Override
+    public void onDataChanged(StockData data) {
+        this.stockData = data;
+    }
+
+    // handle stock service errors
+    @Override
+    public void setError(String error) {
     }
 
     // fetch stock data using service
@@ -68,53 +118,12 @@ public class TradingController implements StockDataObserver {
         this.stockService.removeObserver(observer);
     }
 
-    // check if all instance are initialized and ready to execute the simulation
-    public boolean isReadyToExecute() {
-        if (this.tradingFormulaInstance == null || !this.tradingFormulaInstance.isReadyToExecute()) return false;
-        return this.stockData != null;
+    public double getSimulationBudget() {
+        return simulationBudget;
     }
 
-    // execute the simulation
-    public void execute() {
-        if (!this.isReadyToExecute()) return;
-        this.stopExecution();
-
-        // Execute trading method async
-        this.simulationThread = new Thread(() -> this.tradingFormulaInstance.execute(this.stockData));
-        this.simulationThread.start();
-    }
-
-    // halt execution of the simulation
-    public void stopExecution() {
-        if (this.tradingFormulaInstance != null) {
-            this.tradingFormulaInstance.stopExecution();
-        }
-        if (this.simulationThread != null) {
-            try {
-                this.simulationThread.join();
-            } catch (InterruptedException e) {
-                return;
-            }
-            this.simulationThread = null;
-        }
-    }
-
-    // save current method to file
-    public boolean saveCurrentMethodToFile(String name) {
-        if (this.tradingFormulaInstance == null) return false;
-
-        return SaveFormulaService.saveTradingFormulaToFile(this.tradingFormulaInstance, name);
-    }
-
-    // receive new stock data
-    @Override
-    public void onDataChanged(StockData data) {
-        this.stockData = data;
-    }
-
-    // handle stock service errors
-    @Override
-    public void setError(String error) {
+    public void setSimulationBudget(double simulationBudget) {
+        this.simulationBudget = Math.max(simulationBudget, 0.0);
     }
 
     public static TradingController getInstance() {

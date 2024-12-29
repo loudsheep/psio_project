@@ -13,15 +13,13 @@ public class SimpleUpAndDownTradingFormula implements TradingFormula {
     private static final String description = "Simple strategy that sells when downward trend, and buys when upward";
     private boolean stopExecution = false;
 
-    private final double budget;
+    private double budget;
     private final int daysBackToCheck;
     private final SimulationResult result;
 
-    public SimpleUpAndDownTradingFormula(double budget, int daysBackToCheck) {
-        this.budget = budget;
+    public SimpleUpAndDownTradingFormula(int daysBackToCheck) {
         this.daysBackToCheck = daysBackToCheck;
-        this.result = new SimulationResult(budget);
-
+        this.result = new SimulationResult(0);
         System.out.println("NEW SimpleUpAndDownStrategy created");
     }
 
@@ -38,11 +36,12 @@ public class SimpleUpAndDownTradingFormula implements TradingFormula {
     }
 
     @Override
-    public void execute(StockData data) {
-        this.result.resetState();
+    public void execute(StockData data, double budget) {
+        this.budget = Math.max(budget, 0.0);
+        this.result.resetState(this.budget);
         this.stopExecution = false;
 
-        System.out.println("EXECUTING THE STRATEGY");
+        System.out.println("EXECUTING THE STRATEGY" + this.budget + " " + this.result);
         for (int i = 0; i < data.dailyData().size(); i++) {
             DayStockData dayData = data.dailyData().get(i);
             double price = dayData.getOpen();
@@ -71,7 +70,7 @@ public class SimpleUpAndDownTradingFormula implements TradingFormula {
 
     @Override
     public boolean isReadyToExecute() {
-        if (this.budget <= 0) return false;
+//        if (this.budget <= 0) return false;
         if (this.daysBackToCheck <= 0) return false;
         return true;
     }
@@ -110,7 +109,6 @@ public class SimpleUpAndDownTradingFormula implements TradingFormula {
     public Map<String, Object> getMethodParams() {
         Map<String, Object> result = new java.util.HashMap<>();
 
-        result.put("budget", budget);
         result.put("daysBackToCheck", daysBackToCheck);
 
         return result;

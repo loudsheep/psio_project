@@ -16,14 +16,6 @@ public class MultiIndicatorFusionTradingFormulaValidator implements TradingFormu
     public String[] validate(Map<String, Object> formData) {
         List<String> errors = new ArrayList<>();
 
-        if (!formData.containsKey("budget") || !(formData.get("budget") instanceof Number)) {
-            errors.add("Budget is required and must be a number value.");
-        } else {
-            if ((double) formData.get("budget") <= 0) {
-                errors.add("Budget must be a positive number.");
-            }
-        }
-
         if (!formData.containsKey("rsiPeriod") || !(formData.get("rsiPeriod") instanceof Number)) {
             errors.add("RSI period is required and must be an integer.");
         } else {
@@ -83,7 +75,6 @@ public class MultiIndicatorFusionTradingFormulaValidator implements TradingFormu
     @Override
     public TradingFormula create(Map<String, Object> formData) {
         return new MultiIndicatorFusionTradingFormula(
-                (Double) formData.get("budget"),
                 ((Number) formData.get("rsiPeriod")).intValue(),
                 ((Number) formData.get("shortEmaPeriod")).intValue(),
                 ((Number) formData.get("longEmaPeriod")).intValue(),

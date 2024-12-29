@@ -19,7 +19,6 @@ import java.util.function.UnaryOperator;
 public class MultiIndicatorFusionFormulaFormController implements FormControllerInterface, FormErrorCallback {
 
     public VBox VBoxPane;
-    public TextField budgetField;
     public TextField rsiPeriodField;
     public TextField shortEmaField;
     public TextField longEmaField;
@@ -35,7 +34,6 @@ public class MultiIndicatorFusionFormulaFormController implements FormController
         UnaryOperator<TextFormatter.Change> integerFilter = change -> change.getControlNewText().matches("-?\\d*") ? change : null;
         UnaryOperator<TextFormatter.Change> doubleFilter = change -> change.getControlNewText().matches("-?\\d*(\\.\\d*)?") ? change : null;
 
-        budgetField.setTextFormatter(new TextFormatter<>(doubleFilter));
         rsiPeriodField.setTextFormatter(new TextFormatter<>(integerFilter));
         shortEmaField.setTextFormatter(new TextFormatter<>(integerFilter));
         longEmaField.setTextFormatter(new TextFormatter<>(integerFilter));
@@ -45,9 +43,6 @@ public class MultiIndicatorFusionFormulaFormController implements FormController
 
     @Override
     public void setParams(Map<String, Object> params) {
-        if (params.containsKey("budget")) {
-            this.budgetField.setText(params.get("budget").toString());
-        }
         if (params.containsKey("rsiPeriod")) {
             this.rsiPeriodField.setText(params.get("rsiPeriod").toString());
         }
@@ -92,7 +87,6 @@ public class MultiIndicatorFusionFormulaFormController implements FormController
     private void handleSubmit() throws Exception {
         if (submitCallback != null) {
             Map<String, Object> formData = new HashMap<>();
-            formData.put("budget", Double.parseDouble(budgetField.getText()));
             formData.put("rsiPeriod", Integer.parseInt(rsiPeriodField.getText()));
             formData.put("shortEmaPeriod", Integer.parseInt(shortEmaField.getText()));
             formData.put("longEmaPeriod", Integer.parseInt(longEmaField.getText()));

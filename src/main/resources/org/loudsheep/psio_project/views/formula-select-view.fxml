@@ -31,7 +31,7 @@
          </children>
       </Pane>
       <Label layoutX="190.0" layoutY="14.0" text="Stock Data" />
-      <LineChart fx:id="lineChart" createSymbols="false" layoutX="190.0" layoutY="164.0" legendVisible="false" prefHeight="222.0" prefWidth="395.0" title="Stock Chart">
+      <LineChart fx:id="lineChart" createSymbols="false" layoutX="190.0" layoutY="164.0" legendVisible="false" prefHeight="222.0" prefWidth="395.0" title="Stock Data Preview Chart">
         <xAxis>
           <CategoryAxis side="BOTTOM" tickLabelsVisible="false" tickMarkVisible="false" />
         </xAxis>
@@ -49,15 +49,17 @@
                </padding>
             </VBox>
          </content></ScrollPane>
-      <ScrollPane fitToWidth="true" layoutX="15.0" layoutY="74.0" prefHeight="316.0" prefWidth="168.0">
+      <ScrollPane fitToWidth="true" layoutX="15.0" layoutY="74.0" prefHeight="257.0" prefWidth="168.0">
          <content>
       
-                                      <VBox fx:id="parametersVBox" prefHeight="314.0" prefWidth="168.0" style="-fx-border-color: black; -fx-border-radius: 3; -fx-border-width: 1;">
+                                      <VBox fx:id="parametersVBox" prefHeight="276.0" prefWidth="166.0" style="-fx-border-color: black; -fx-border-radius: 3; -fx-border-width: 1;">
                <padding>
                   <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
                </padding>
             </VBox>
          </content>
       </ScrollPane>
+      <TextField fx:id="simulationBudgetField" layoutX="14.0" layoutY="360.0" prefHeight="26.0" prefWidth="168.0" />
+      <Label layoutX="15.0" layoutY="343.0" text="Simulation budget" />
     </children>
 </AnchorPane>

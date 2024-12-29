@@ -16,14 +16,6 @@ public class SimpleUpAndDownTradingFormulaValidator implements TradingFormulaVal
     public String[] validate(Map<String, Object> formData) {
         List<String> errors = new ArrayList<>();
 
-        if (!formData.containsKey("budget") || !(formData.get("budget") instanceof Number)) {
-            errors.add("Budget is required and must be a number value.");
-        } else {
-            if ((double) formData.get("budget") <= 0) {
-                errors.add("Budget must be a positive number");
-            }
-        }
-
         if (!formData.containsKey("daysBackToCheck") || !(formData.get("daysBackToCheck") instanceof Number)) {
             errors.add("daysBackToCheck is required and must be an integer.");
         } else {
@@ -37,6 +29,6 @@ public class SimpleUpAndDownTradingFormulaValidator implements TradingFormulaVal
 
     @Override
     public TradingFormula create(Map<String, Object> formData) {
-        return new SimpleUpAndDownTradingFormula((Double) formData.get("budget"), ((Number) formData.get("daysBackToCheck")).intValue());
+        return new SimpleUpAndDownTradingFormula(((Number) formData.get("daysBackToCheck")).intValue());
     }
 }

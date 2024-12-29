@@ -1,6 +1,7 @@
 package org.loudsheep.psio_project.frontend.controllers;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
@@ -22,6 +23,7 @@ import org.loudsheep.psio_project.frontend.util.Epoch;
 import java.time.*;
 import java.util.List;
 import java.util.Map;
+import java.util.function.UnaryOperator;
 
 public class SimulationFormulaSelectController implements StockDataObserver {
     public VBox parametersVBox;
@@ -39,6 +41,7 @@ public class SimulationFormulaSelectController implements StockDataObserver {
     public MenuItem randomFormulaButton;
     public MenuItem simpleUDFormulaButton;
     public MenuItem multifusionFormulaButton;
+    public TextField simulationBudgetField;
 
     // Handles getting stock data
     public void initialize() {
@@ -56,7 +59,21 @@ public class SimulationFormulaSelectController implements StockDataObserver {
         this.showFormulaParams();
         this.showSavedMethods();
 
+        UnaryOperator<TextFormatter.Change> doubleFilter = change -> change.getControlNewText().matches("-?\\d*(\\.\\d*)?") ? change : null;
+        this.simulationBudgetField.setTextFormatter(new TextFormatter<>(doubleFilter));
+        this.simulationBudgetField.setText(String.valueOf(TradingController.getInstance().getSimulationBudget()));
+
         this.errorLabel.setText("");
+
+        this.simulationBudgetField.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue.isEmpty()) return;
+            try {
+                TradingController.getInstance().setSimulationBudget(Double.parseDouble(simulationBudgetField.getText()));
+            } catch (NumberFormatException e) {
+                Alert alert = new Alert(Alert.AlertType.ERROR, "Incorrect budget format", ButtonType.OK);
+                alert.showAndWait();
+            }
+        });
     }
 
     // show selected method params
