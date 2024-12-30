@@ -64,7 +64,6 @@ public class RandomTradingFormula implements TradingFormula {
 
     @Override
     public boolean isReadyToExecute() {
-        if (this.budget <= 0) return false;
         return true;
     }
 

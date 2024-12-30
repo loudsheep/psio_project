@@ -13,6 +13,7 @@ import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
+
 import org.loudsheep.psio_project.App;
 import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
@@ -22,6 +23,7 @@ import org.loudsheep.psio_project.backend.observers.SimulationResultObserver;
 import org.loudsheep.psio_project.TradingController;
 import org.loudsheep.psio_project.backend.trading.TradingFormula;
 import org.loudsheep.psio_project.frontend.SceneManager;
+import org.loudsheep.psio_project.frontend.util.DateStringConverter;
 import org.loudsheep.psio_project.frontend.util.Epoch;
 
 import java.util.Date;
@@ -39,8 +41,8 @@ public class SimulationExecutionController implements SimulationResultObserver {
     public Label stockIncreaseLabel;
     public Label budgetIncreaseLabel;
 
-    private XYChart.Series<String, Number> buyTransactionSeries; // Green points
-    private XYChart.Series<String, Number> sellTransactionSeries;
+    private XYChart.Series<Number, Number> buyTransactionSeries; // Green points
+    private XYChart.Series<Number, Number> sellTransactionSeries;
 
     public void initialize() {
         StockData data = TradingController.getInstance().getStockData();
@@ -56,10 +58,10 @@ public class SimulationExecutionController implements SimulationResultObserver {
         Date end = Epoch.toDate(data.getLastDataPointTimestamp() * 1000);
         this.stockDataRangeLabel.setText(start + " - " + end);
 
-        double increase = (double)Math.round((data.getLastDataPoint().getClose() - data.getFirstDataPoint().getClose()) / data.getFirstDataPoint().getClose() * 100 * 100)/100;
+        double increase = (double) Math.round((data.getLastDataPoint().getClose() - data.getFirstDataPoint().getClose()) / data.getFirstDataPoint().getClose() * 100 * 100) / 100;
         this.stockIncreaseLabel.setText("Stock increase: " + increase + "%");
 
-        LineChart<String, Number> chart = this.createChart(data);
+        LineChart<Number, Number> chart = this.createChart(data);
         chart.prefWidthProperty().bind(this.chartPane.widthProperty());
         chart.prefHeightProperty().bind(this.chartPane.heightProperty());
 
@@ -68,33 +70,36 @@ public class SimulationExecutionController implements SimulationResultObserver {
         TradingController.getInstance().getTradingFormulaInstance().addStrategyResultObserver(this);
     }
 
-    private LineChart<String, Number> createChart(StockData stockData) {
+    private LineChart<Number, Number> createChart(StockData stockData) {
         // Axes
-        CategoryAxis xAxis = new CategoryAxis();
+        NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Time");
-        xAxis.setTickLabelsVisible(false);
+        xAxis.setForceZeroInRange(false);
+        xAxis.setTickLabelRotation(90);
+
+        xAxis.setTickLabelFormatter(new DateStringConverter());
+
 
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Price");
         yAxis.setForceZeroInRange(false);
 
         // LineChart
-        LineChart<String, Number> lineChart = new LineChart<>(xAxis, yAxis);
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
         lineChart.setTitle("Trading Chart");
         lineChart.setAnimated(false);
         lineChart.getStylesheets().add(App.class.getResource("styles/chart-styles.css").toExternalForm());
         lineChart.setLegendVisible(false);
 
-
         // Dataset 1 (Line chart)
-        XYChart.Series<String, Number> series1 = new XYChart.Series<>();
+        XYChart.Series<Number, Number> series1 = new XYChart.Series<>();
         series1.setName("Stock Price");
 
         for (DayStockData day : stockData.dailyData()) {
-            series1.getData().add(new XYChart.Data<>(day.getTimestamp() + "", day.getClose()));
+            series1.getData().add(new XYChart.Data<>(day.getTimestamp(), day.getClose()));
         }
 
-        for (XYChart.Data<String, Number> data : series1.getData()) {
+        for (XYChart.Data<Number, Number> data : series1.getData()) {
             Circle symbol = new Circle(1); // Set the radius of the circle (size)
             symbol.setFill(Color.BLUE); // Set the color of the symbol
             data.setNode(symbol); // Set the custom node as the symbol
@@ -140,14 +145,14 @@ public class SimulationExecutionController implements SimulationResultObserver {
             boolean isBuy = transaction.volume() < 0;
 
             if (isBuy) {
-                XYChart.Data<String, Number> data = new XYChart.Data<>(transaction.timestamp() + "", transaction.price());
+                XYChart.Data<Number, Number> data = new XYChart.Data<>(transaction.timestamp(), transaction.price());
                 Circle symbol = new Circle(5); // Set the radius of the circle (size)
                 symbol.setFill(Color.LIGHTGREEN); // Set the color of the symbol
                 data.setNode(symbol);
 
                 this.buyTransactionSeries.getData().add(data);
             } else {
-                XYChart.Data<String, Number> data = new XYChart.Data<>(transaction.timestamp() + "", transaction.price());
+                XYChart.Data<Number, Number> data = new XYChart.Data<>(transaction.timestamp(), transaction.price());
                 Circle symbol = new Circle(5); // Set the radius of the circle (size)
                 symbol.setFill(Color.RED); // Set the color of the symbol
                 data.setNode(symbol);
@@ -182,7 +187,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
 
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(name -> {
-            if (TradingController.getInstance().saveCurrentMethodToFile(name)){
+            if (TradingController.getInstance().saveCurrentMethodToFile(name)) {
                 Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Saved successfully", ButtonType.OK);
                 alert.showAndWait();
             } else {

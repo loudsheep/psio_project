@@ -146,8 +146,7 @@ public class MultiIndicatorFusionTradingFormula implements TradingFormula {
 
     @Override
     public boolean isReadyToExecute() {
-        return budget > 0 &&
-                rsiPeriod > 0 &&
+        return rsiPeriod > 0 &&
                 shortEmaPeriod > 0 &&
                 longEmaPeriod > shortEmaPeriod &&
                 bollingerPeriod > 0 &&

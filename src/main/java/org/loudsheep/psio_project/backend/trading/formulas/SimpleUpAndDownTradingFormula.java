@@ -70,7 +70,6 @@ public class SimpleUpAndDownTradingFormula implements TradingFormula {
 
     @Override
     public boolean isReadyToExecute() {
-//        if (this.budget <= 0) return false;
         if (this.daysBackToCheck <= 0) return false;
         return true;
     }
