@@ -41,4 +41,11 @@ public class DateStringConverter extends StringConverter<Number> {
         // Convert the LocalDate back to a Unix timestamp in milliseconds
         return date.atStartOfDay(ZoneId.systemDefault()).toInstant().toEpochMilli();
     }
+
+    public static String timestampToDateString(long timestamp) {
+        Date date = new Date(timestamp * 1000);
+        DateFormat df = new SimpleDateFormat("dd-MM-yyyy");
+
+        return df.format(date);
+    }
 }

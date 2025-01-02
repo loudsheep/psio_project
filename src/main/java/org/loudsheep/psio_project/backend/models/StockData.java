@@ -21,6 +21,20 @@ public record StockData(String symbol, List<DayStockData> dailyData) {
         return this.dailyData.getLast();
     }
 
+    // get stock data before the specified day; assumes that dailyData is sorted and doesn't include threshold in result
+    public List<DayStockData> getStockDataBefore(DayStockData threshold, int maxSize) {
+        for (int i = 0; i < this.dailyData.size(); i++) {
+            if (this.dailyData.get(i).getTimestamp() >= threshold.getTimestamp()) {
+                return this.dailyData.subList(Math.max(0, i - maxSize), i);
+            }
+        }
+        return this.dailyData;
+    }
+
+    public List<DayStockData> getStockDataBefore(DayStockData threshold) {
+        return this.getStockDataBefore(threshold, Integer.MAX_VALUE);
+    }
+
     @Override
     public String toString() {
         return "StockData{" +

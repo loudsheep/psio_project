@@ -3,12 +3,11 @@ package org.loudsheep.psio_project.backend.models;
 import java.util.Date;
 
 public class DayStockData {
-    private long timestamp;
-    private Date date;
-    private double low;
-    private double high;
-    private double open;
-    private double close;
+    private final long timestamp;
+    private final double low;
+    private final double high;
+    private final double open;
+    private final double close;
 
     // constructor
     public DayStockData(long timestamp, double low, double high, double open, double close) {
@@ -17,7 +16,6 @@ public class DayStockData {
         this.high = high;
         this.open = open;
         this.close = close;
-        this.date = new Date(timestamp * 1000);
     }
 
     // getters for each field

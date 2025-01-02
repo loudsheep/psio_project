@@ -14,6 +14,10 @@ public class SceneManager {
         primaryStage = stage;
     }
 
+    public static Stage getStage() {
+        return primaryStage;
+    }
+
     public static void switchScene(String fxmlPath, String title) {
         try {
             FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxmlPath));

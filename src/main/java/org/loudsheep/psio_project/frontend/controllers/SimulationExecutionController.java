@@ -2,18 +2,17 @@ package org.loudsheep.psio_project.frontend.controllers;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
+import javafx.geometry.Point2D;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
-import javafx.scene.control.Alert;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Circle;
 
+import javafx.scene.shape.Line;
 import org.loudsheep.psio_project.App;
 import org.loudsheep.psio_project.backend.models.DayStockData;
 import org.loudsheep.psio_project.backend.models.StockData;
@@ -62,10 +61,10 @@ public class SimulationExecutionController implements SimulationResultObserver {
         this.stockIncreaseLabel.setText("Stock increase: " + increase + "%");
 
         LineChart<Number, Number> chart = this.createChart(data);
-        chart.prefWidthProperty().bind(this.chartPane.widthProperty());
-        chart.prefHeightProperty().bind(this.chartPane.heightProperty());
-
-        this.chartPane.getChildren().add(chart);
+//        chart.prefWidthProperty().bind(this.chartPane.widthProperty());
+//        chart.prefHeightProperty().bind(this.chartPane.heightProperty());
+//
+//        this.chartPane.getChildren().add(chart);
 
         TradingController.getInstance().getTradingFormulaInstance().addStrategyResultObserver(this);
     }
@@ -79,10 +78,10 @@ public class SimulationExecutionController implements SimulationResultObserver {
 
         xAxis.setTickLabelFormatter(new DateStringConverter());
 
-
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Price");
         yAxis.setForceZeroInRange(false);
+        yAxis.setVisible(false);
 
         // LineChart
         LineChart<Number, Number> lineChart = new LineChart<>(xAxis, yAxis);
@@ -103,6 +102,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
             Circle symbol = new Circle(1); // Set the radius of the circle (size)
             symbol.setFill(Color.BLUE); // Set the color of the symbol
             data.setNode(symbol); // Set the custom node as the symbol
+
         }
 
 
@@ -124,7 +124,103 @@ public class SimulationExecutionController implements SimulationResultObserver {
         sellTransactionSeries.getData().forEach(data ->
                 data.getNode().setStyle("-fx-background-color: red, white; -fx-background-radius: 5px;"));
 
+        // Tooltip for the closest data point
+        Tooltip tooltip = new Tooltip();
+        Tooltip.install(lineChart, tooltip);
+
+        // Create a vertical line that follows the mouse
+        Line verticalLine = new Line();
+        verticalLine.setStroke(Color.GRAY);
+        verticalLine.setStrokeWidth(1);
+        verticalLine.setVisible(false);
+
+        lineChart.prefWidthProperty().bind(this.chartPane.widthProperty());
+        lineChart.prefHeightProperty().bind(this.chartPane.heightProperty());
+
+        Pane pane = new Pane();
+        this.chartPane.getChildren().add(pane);
+        this.chartPane.getChildren().add(lineChart);
+
+
+        // Add the vertical line to the Pane
+        pane.getChildren().add(verticalLine);
+
+        // Mouse moved event listener
+        lineChart.setOnMouseMoved(event -> {
+
+//            System.out.println("mouseX scene: " + event.getSceneX() + " x: " + event.getX() + " screen: " + event.getScreenX());
+
+            double x = xAxis.getDisplayPosition(stockData.getFirstDataPointTimestamp());
+            double y = yAxis.getDisplayPosition(stockData.getFirstDataPoint().getClose());
+            double firstPointPosition = xAxis.localToScene(x, y).getX();
+
+            // Get the mouse's x-coordinate in the scene
+            double mouseXInScene = event.getSceneX();
+
+            // Get the chart's position relative to the scene
+            double chartXInScene = this.chartPane.getLayoutX();
+
+            double mouseCorrection = firstPointPosition - x - chartXInScene - xAxis.getLayoutX();
+
+//            System.out.println("mouseX " + mouseXInScene + " chartX: " + chartXInScene);
+//            System.out.println("line chart: " + lineChart.getLayoutX());
+//            System.out.println("yAxis " + yAxis.getLayoutBounds());
+//            System.out.println("yAxis pos " + yAxis.getLayoutX() + " ");
+//            System.out.println("xAxis zero " + xAxis.getLayoutX() + " " + xAxis.getLayoutBounds());
+
+            // Calculate the mouse's x position relative to the LineChart
+//            double mouseCorrection =
+            double mouseXRelativeToChart = mouseXInScene - chartXInScene - yAxis.getLayoutX() - yAxis.getLayoutBounds().getWidth() - mouseCorrection;
+
+            // Adjust vertical line to follow mouse position
+            verticalLine.setVisible(true);
+            verticalLine.setStartX(mouseXInScene - chartXInScene);
+            verticalLine.setEndX(mouseXInScene - chartXInScene);
+            verticalLine.setStartY(0);
+            verticalLine.setEndY(lineChart.getHeight());
+
+            // Find the closest data point based on the mouse's x position
+            XYChart.Data<Number, Number> closestData = getClosestDataPoint(series1, mouseXRelativeToChart, xAxis);
+
+            if (closestData != null) {
+                // Show tooltip near the vertical line with the closest data value
+                double tooltipX = mouseXRelativeToChart + 10; // Adjust the tooltip X position slightly to the right
+                double tooltipY = Math.round(closestData.getYValue().doubleValue() * 100) / 100.0;
+                tooltip.setText("Value: " + tooltipY + "\n" + DateStringConverter.timestampToDateString(closestData.getXValue().longValue()));
+//                tooltip.setX(tooltipX + SceneManager.getStage().getX());
+//                tooltip.setY(yAxis.getDisplayPosition(tooltipY));
+                tooltip.setX(event.getScreenX());
+                tooltip.setY(event.getScreenY() + 10);
+            }
+        });
+
+        // Hide the vertical line when the mouse is no longer over the chart
+        lineChart.setOnMouseExited(event -> {
+            verticalLine.setVisible(false);
+        });
+
         return lineChart;
+    }
+
+    private XYChart.Data<Number, Number> getClosestDataPoint(XYChart.Series<Number, Number> series, double mouseX, NumberAxis xAxis) {
+        double closestDistance = Double.MAX_VALUE;
+        XYChart.Data<Number, Number> closestData = null;
+
+        for (XYChart.Data<Number, Number> data : series.getData()) {
+            // Get the x position of the data point
+            double dataX = xAxis.getDisplayPosition(data.getXValue());
+            double distance = Math.abs(dataX - mouseX);
+
+            // Track the closest data point
+            if (distance < closestDistance) {
+                closestDistance = distance;
+                closestData = data;
+            }
+        }
+
+//        System.out.println(mouseX + " - Closest point: " + new Date((long)closestData.getXValue() * 1000) + " x: " + xAxis.getDisplayPosition(closestData.getXValue()));
+
+        return closestData;
     }
 
     @Override
