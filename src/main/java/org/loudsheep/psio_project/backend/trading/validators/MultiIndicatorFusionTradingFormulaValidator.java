@@ -45,23 +45,6 @@ public class MultiIndicatorFusionTradingFormulaValidator implements TradingFormu
             }
         }
 
-//        if (!formData.containsKey("longEmaPeriod") || !(formData.get("longEmaPeriod") instanceof Number)) {
-//            errors.add("Long EMA period is required and must be an integer.");
-//        } else {
-//            int longEmaPeriod = ((Number) formData.get("longEmaPeriod")).intValue();
-//            if (longEmaPeriod <= 0) {
-//                errors.add("Long EMA period must be greater than 0.");
-//            }
-//        }
-//
-//        if (formData.containsKey("shortEmaPeriod") && formData.containsKey("longEmaPeriod")) {
-//            int shortEmaPeriod = ((Number) formData.get("shortEmaPeriod")).intValue();
-//            int longEmaPeriod = ((Number) formData.get("longEmaPeriod")).intValue();
-//            if (shortEmaPeriod >= longEmaPeriod) {
-//                errors.add("Short EMA period must be less than Long EMA period.");
-//            }
-//        }
-
         if (!formData.containsKey("bollingerPeriod") || !(formData.get("bollingerPeriod") instanceof Number)) {
             errors.add("Bollinger period is required and must be an integer.");
         } else {

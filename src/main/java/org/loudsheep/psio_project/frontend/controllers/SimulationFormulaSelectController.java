@@ -42,6 +42,7 @@ public class SimulationFormulaSelectController implements StockDataObserver {
     public MenuItem simpleUDFormulaButton;
     public MenuItem multifusionFormulaButton;
     public TextField simulationBudgetField;
+    public MenuItem macdFormulaButton;
 
     // Handles getting stock data
     public void initialize() {
@@ -156,6 +157,7 @@ public class SimulationFormulaSelectController implements StockDataObserver {
         switch (methodName) {
             case "SimpleUpAndDown" -> loadMethodForm("views/forms/simple-method-form.fxml", params);
             case "Random" -> loadMethodForm("views/forms/random-method-form.fxml", params);
+            case "MACD" -> loadMethodForm("views/forms/macd-method-form.fxml", params);
             case "MultiIndicatorFusion" ->
                     loadMethodForm("views/forms/multi-indicator-fusion-method-form.fxml", params);
             case null, default -> {
@@ -180,6 +182,12 @@ public class SimulationFormulaSelectController implements StockDataObserver {
     public void handleMultiFusionMethod() {
         loadFormForMethod("MultiIndicatorFusion", Map.of());
         formulaMenuButton.setText(randomFormulaButton.getText());
+    }
+
+    @FXML
+    public void handleMACDFormula() {
+        loadFormForMethod("MACD", Map.of());
+        formulaMenuButton.setText(macdFormulaButton.getText());
     }
 
     // load and show params form for specified method

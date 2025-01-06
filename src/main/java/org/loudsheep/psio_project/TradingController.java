@@ -6,6 +6,8 @@ import org.loudsheep.psio_project.backend.services.SaveFormulaService;
 import org.loudsheep.psio_project.backend.services.StockService;
 import org.loudsheep.psio_project.backend.trading.TradingFormulaValidator;
 import org.loudsheep.psio_project.backend.trading.TradingFormula;
+import org.loudsheep.psio_project.backend.trading.formulas.MACDTradingFormula;
+import org.loudsheep.psio_project.backend.trading.validators.MACDTradingFormulaValidator;
 import org.loudsheep.psio_project.backend.trading.validators.RandomTradingFormulaValidator;
 import org.loudsheep.psio_project.backend.trading.validators.MultiIndicatorFusionTradingFormulaValidator;
 import org.loudsheep.psio_project.backend.trading.validators.SimpleUpAndDownTradingFormulaValidator;
@@ -94,6 +96,7 @@ public class TradingController implements StockDataObserver {
             case "SimpleUpAndDown" -> validator = new SimpleUpAndDownTradingFormulaValidator();
             case "Random" -> validator = new RandomTradingFormulaValidator();
             case "MultiIndicatorFusion" -> validator = new MultiIndicatorFusionTradingFormulaValidator();
+            case "MACD" -> validator = new MACDTradingFormulaValidator();
             default -> {
                 return new String[]{"Unknown strategy name '" + methodName + "'"};
             }
