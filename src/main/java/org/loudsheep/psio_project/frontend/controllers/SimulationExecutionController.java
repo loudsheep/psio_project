@@ -2,8 +2,6 @@ package org.loudsheep.psio_project.frontend.controllers;
 
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
-import javafx.geometry.Point2D;
-import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
@@ -57,7 +55,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
         Date end = Epoch.toDate(data.getLastDataPointTimestamp() * 1000);
         this.stockDataRangeLabel.setText(start + " - " + end);
 
-        double increase = (double) Math.round((data.getLastDataPoint().getClose() - data.getFirstDataPoint().getClose()) / data.getFirstDataPoint().getClose() * 100 * 100) / 100;
+        double increase = (double) Math.round((data.getLastDataPoint().close() - data.getFirstDataPoint().close()) / data.getFirstDataPoint().close() * 100 * 100) / 100;
         this.stockIncreaseLabel.setText("Stock increase: " + increase + "%");
 
         LineChart<Number, Number> chart = this.createChart(data);
@@ -95,7 +93,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
         series1.setName("Stock Price");
 
         for (DayStockData day : stockData.dailyData()) {
-            series1.getData().add(new XYChart.Data<>(day.getTimestamp(), day.getClose()));
+            series1.getData().add(new XYChart.Data<>(day.timestamp(), day.close()));
         }
 
         for (XYChart.Data<Number, Number> data : series1.getData()) {
@@ -151,7 +149,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
 //            System.out.println("mouseX scene: " + event.getSceneX() + " x: " + event.getX() + " screen: " + event.getScreenX());
 
             double x = xAxis.getDisplayPosition(stockData.getFirstDataPointTimestamp());
-            double y = yAxis.getDisplayPosition(stockData.getFirstDataPoint().getClose());
+            double y = yAxis.getDisplayPosition(stockData.getFirstDataPoint().close());
             double firstPointPosition = xAxis.localToScene(x, y).getX();
 
             // Get the mouse's x-coordinate in the scene

@@ -12,7 +12,7 @@ public class SimulationResult {
     // current money available
     private double currentBudget;
     private int stockOwned;
-    private List<SimulationResultObserver> observers = new ArrayList<>();
+    private final List<SimulationResultObserver> observers = new ArrayList<>();
 
     public SimulationResult(double initialBudget) {
         this.initialBudget = Math.max(initialBudget, 0);

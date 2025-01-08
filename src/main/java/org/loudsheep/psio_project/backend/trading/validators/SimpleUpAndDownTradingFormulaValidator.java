@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public class SimpleUpAndDownTradingFormulaValidator implements TradingFormulaValidator {
-    public SimpleUpAndDownTradingFormulaValidator() {
-    }
-
     @Override
     public String[] validate(Map<String, Object> formData) {
         List<String> errors = new ArrayList<>();

@@ -6,7 +6,6 @@ import org.loudsheep.psio_project.backend.models.StockData;
 import org.loudsheep.psio_project.backend.observers.SimulationResultObserver;
 import org.loudsheep.psio_project.backend.trading.TradingFormula;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -19,7 +18,6 @@ public class RSITradingFormula implements TradingFormula {
     private final int buyThreshold;
 
     private boolean stopExecution = false;
-    private double budget;
     private final SimulationResult result;
 
     public RSITradingFormula(int period, int sellThreshold, int buyThreshold) {
@@ -27,14 +25,13 @@ public class RSITradingFormula implements TradingFormula {
         this.sellThreshold = sellThreshold;
         this.buyThreshold = buyThreshold;
         this.result = new SimulationResult(0);
-        System.out.println("NEW RSI Strategy created");
     }
 
     private double calculateRSI(List<DayStockData> data, int rsiPeriod) {
         double gains = 0;
         double losses = 0;
         for (int i = data.size() - 1; i >= Math.max(data.size() - rsiPeriod, 0) + 1; i--) {
-            double change = data.get(i).getClose() - data.get(i - 1).getClose();
+            double change = data.get(i).close() - data.get(i - 1).close();
 
             if (change > 0) gains += change;
             else losses -= change;
@@ -49,23 +46,20 @@ public class RSITradingFormula implements TradingFormula {
 
     @Override
     public void execute(StockData data, double budget) {
-        this.budget = Math.max(budget, 0.0);
-        this.result.resetState(this.budget);
+        this.result.resetState(Math.max(budget, 0.0));
         this.stopExecution = false;
-
-        System.out.println("EXECUTING THE RSI STRATEGY with budget: " + this.budget);
-
+        
         for (int i = 0; i < data.dailyData().size(); i++) {
             DayStockData dayData = data.dailyData().get(i);
-            double price = dayData.getClose();
+            double price = dayData.close();
 
             if (i >= this.period) {
                 double rsi = this.calculateRSI(data.getStockDataBefore(dayData), this.period);
 
                 if (rsi >= sellThreshold) {
-                    this.result.sellAllStock(price, dayData.getTimestamp());
+                    this.result.sellAllStock(price, dayData.timestamp());
                 } else if (rsi <= buyThreshold) {
-                    this.result.buyStock(this.result.maxStockToBuy(price), price, dayData.getTimestamp());
+                    this.result.buyStock(this.result.maxStockToBuy(price), price, dayData.timestamp());
                 }
             }
 
@@ -75,12 +69,12 @@ public class RSITradingFormula implements TradingFormula {
             }
 
             if (this.stopExecution) {
-                this.result.sellAllStock(price, dayData.getTimestamp());
+                this.result.sellAllStock(price, dayData.timestamp());
                 break;
             }
         }
 
-        this.result.sellAllStock(data.dailyData().getLast().getClose(), data.getLastDataPointTimestamp());
+        this.result.sellAllStock(data.dailyData().getLast().close(), data.getLastDataPointTimestamp());
     }
 
     @Override

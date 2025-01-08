@@ -9,10 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public class MACDTradingFormulaValidator implements TradingFormulaValidator {
-
-    public MACDTradingFormulaValidator() {
-    }
-
     @Override
     public String[] validate(Map<String, Object> formData) {
         List<String> errors = new ArrayList<>();

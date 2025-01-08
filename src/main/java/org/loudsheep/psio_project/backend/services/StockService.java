@@ -46,7 +46,6 @@ public class StockService {
     // fetch and parse stock data for a given symbol
     public void getStockData(String symbol, long startTime, long endTime) {
         String urlString = String.format(BASE_URL, symbol.toUpperCase(), startTime, endTime);
-        System.out.println(urlString);
         String jsonResponse;
         try {
             jsonResponse = fetchJsonData(urlString);

@@ -12,25 +12,21 @@ public class RandomTradingFormula implements TradingFormula {
     private static final String name = "Random Strategy";
     private static final String description = "Random decisions";
 
-    private double budget;
     private final SimulationResult result;
     private boolean stopExecution = false;
 
     public RandomTradingFormula() {
         this.result = new SimulationResult(0);
-
-        System.out.println("NEW RandomStrategy created");
     }
 
     @Override
     public void execute(StockData data, double budget) {
-        this.budget = Math.max(budget, 0.0);
-        this.result.resetState(this.budget);
+        this.result.resetState(Math.max(budget, 0.0));
         this.stopExecution = false;
 
         for (int i = 0; i < data.dailyData().size(); i++) {
             DayStockData dayData = data.dailyData().get(i);
-            double price = dayData.getOpen();
+            double price = dayData.open();
 
             double rand = Math.random();
             // 10% -> buy Transaction
@@ -41,11 +37,11 @@ public class RandomTradingFormula implements TradingFormula {
                 int maxToBuy = this.result.maxStockToBuy(price);
                 int randomBuyAmount = (int) Math.floor(Math.random() * maxToBuy);
 
-                this.result.buyStock(randomBuyAmount, price, dayData.getTimestamp());
+                this.result.buyStock(randomBuyAmount, price, dayData.timestamp());
             } else if (rand < 0.2) {
                 int randomToSell = (int) Math.floor(this.result.getStockOwned() * Math.random());
 
-                this.result.sellStock(randomToSell, price, dayData.getTimestamp());
+                this.result.sellStock(randomToSell, price, dayData.timestamp());
             }
 
             try {
@@ -54,12 +50,12 @@ public class RandomTradingFormula implements TradingFormula {
             }
 
             if (this.stopExecution) {
-                this.result.sellAllStock(price, dayData.getTimestamp());
+                this.result.sellAllStock(price, dayData.timestamp());
                 break;
             }
         }
 
-        this.result.sellAllStock(data.dailyData().getLast().getClose(), data.getLastDataPointTimestamp());
+        this.result.sellAllStock(data.dailyData().getLast().close(), data.getLastDataPointTimestamp());
     }
 
     @Override

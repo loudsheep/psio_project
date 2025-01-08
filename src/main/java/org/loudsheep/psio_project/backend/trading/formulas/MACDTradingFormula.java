@@ -19,7 +19,6 @@ public class MACDTradingFormula implements TradingFormula {
     private final int signalPeriod;
 
     private boolean stopExecution = false;
-    private double budget;
     private final SimulationResult result;
 
     public MACDTradingFormula(int shortPeriod, int longPeriod, int signalPeriod) {
@@ -27,7 +26,6 @@ public class MACDTradingFormula implements TradingFormula {
         this.longPeriod = longPeriod;
         this.signalPeriod = signalPeriod;
         this.result = new SimulationResult(0);
-        System.out.println("NEW MACD Strategy created");
     }
 
     private List<Double> calculateEMA(List<Double> prices, int period) {
@@ -64,25 +62,23 @@ public class MACDTradingFormula implements TradingFormula {
 
     @Override
     public void execute(StockData data, double budget) {
-        this.budget = Math.max(budget, 0.0);
-        this.result.resetState(this.budget);
+        this.result.resetState(Math.max(budget, 0.0));
         this.stopExecution = false;
 
-        System.out.println("EXECUTING THE MACD STRATEGY with budget: " + this.budget);
         List<Double> closingPrices = new ArrayList<>();
 
         for (int i = 0; i < data.dailyData().size(); i++) {
             DayStockData dayData = data.dailyData().get(i);
-            double price = dayData.getClose();
+            double price = dayData.close();
             closingPrices.add(price);
 
             if (i >= Math.max(this.shortPeriod, this.longPeriod)) {
                 double macdValue = getLastMACD(closingPrices);
 
                 if (macdValue > 0) { // Buy signal
-                    this.result.buyStock(this.result.maxStockToBuy(price), price, dayData.getTimestamp());
+                    this.result.buyStock(this.result.maxStockToBuy(price), price, dayData.timestamp());
                 } else { // Sell signal
-                    this.result.sellAllStock(price, dayData.getTimestamp());
+                    this.result.sellAllStock(price, dayData.timestamp());
                 }
             }
 
@@ -92,12 +88,12 @@ public class MACDTradingFormula implements TradingFormula {
             }
 
             if (this.stopExecution) {
-                this.result.sellAllStock(price, dayData.getTimestamp());
+                this.result.sellAllStock(price, dayData.timestamp());
                 break;
             }
         }
 
-        this.result.sellAllStock(data.dailyData().getLast().getClose(), data.getLastDataPointTimestamp());
+        this.result.sellAllStock(data.dailyData().getLast().close(), data.getLastDataPointTimestamp());
     }
 
     @Override

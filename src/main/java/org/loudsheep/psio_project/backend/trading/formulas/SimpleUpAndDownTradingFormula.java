@@ -13,14 +13,12 @@ public class SimpleUpAndDownTradingFormula implements TradingFormula {
     private static final String description = "Simple strategy that sells when downward trend, and buys when upward";
     private boolean stopExecution = false;
 
-    private double budget;
     private final int daysBackToCheck;
     private final SimulationResult result;
 
     public SimpleUpAndDownTradingFormula(int daysBackToCheck) {
         this.daysBackToCheck = daysBackToCheck;
         this.result = new SimulationResult(0);
-        System.out.println("NEW SimpleUpAndDownStrategy created");
     }
 
     private int getLastDaysTrend(StockData data, int currentDayIdx, int daysBack) {
@@ -29,29 +27,27 @@ public class SimpleUpAndDownTradingFormula implements TradingFormula {
         for (int i = currentDayIdx; i >= Math.max(0, currentDayIdx - daysBack); i--) {
             DayStockData dayData = data.dailyData().get(i);
 
-            if (dayData.getOpen() == currentData.getOpen()) trend = 0;
-            else trend = (dayData.getOpen() - currentData.getOpen() > 0) ? 1 : -1;
+            if (dayData.open() == currentData.open()) trend = 0;
+            else trend = (dayData.open() - currentData.open() > 0) ? 1 : -1;
         }
         return trend;
     }
 
     @Override
     public void execute(StockData data, double budget) {
-        this.budget = Math.max(budget, 0.0);
-        this.result.resetState(this.budget);
+        this.result.resetState(Math.max(budget, 0.0));
         this.stopExecution = false;
 
-        System.out.println("EXECUTING THE STRATEGY" + this.budget + " " + this.result);
         for (int i = 0; i < data.dailyData().size(); i++) {
             DayStockData dayData = data.dailyData().get(i);
-            double price = dayData.getOpen();
+            double price = dayData.open();
 
             int trend = this.getLastDaysTrend(data, i, this.daysBackToCheck);
 
             if (trend > 0) {
-                this.result.buyStock(this.result.maxStockToBuy(price), price, dayData.getTimestamp());
+                this.result.buyStock(this.result.maxStockToBuy(price), price, dayData.timestamp());
             } else {
-                this.result.sellAllStock(price, dayData.getTimestamp());
+                this.result.sellAllStock(price, dayData.timestamp());
             }
 
             try {
@@ -60,12 +56,12 @@ public class SimpleUpAndDownTradingFormula implements TradingFormula {
             }
 
             if (this.stopExecution) {
-                this.result.sellAllStock(price, dayData.getTimestamp());
+                this.result.sellAllStock(price, dayData.timestamp());
                 break;
             }
         }
 
-        this.result.sellAllStock(data.dailyData().getLast().getClose(), data.getLastDataPointTimestamp());
+        this.result.sellAllStock(data.dailyData().getLast().close(), data.getLastDataPointTimestamp());
     }
 
     @Override

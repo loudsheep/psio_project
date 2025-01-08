@@ -236,7 +236,7 @@ public class SimulationFormulaSelectController implements StockDataObserver {
             series.setName(symbolField.getText() + " chart");
 
             for (DayStockData day : data.dailyData()) {
-                series.getData().add(new XYChart.Data<>(day.getTimestamp() + "", day.getClose()));
+                series.getData().add(new XYChart.Data<>(day.timestamp() + "", day.close()));
             }
 
             lineChart.getData().clear();

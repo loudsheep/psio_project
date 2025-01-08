@@ -9,9 +9,6 @@ import java.util.List;
 import java.util.Map;
 
 public class RandomTradingFormulaValidator implements TradingFormulaValidator {
-    public RandomTradingFormulaValidator() {
-    }
-
     @Override
     public String[] validate(Map<String, Object> formData) {
         return new String[0];
