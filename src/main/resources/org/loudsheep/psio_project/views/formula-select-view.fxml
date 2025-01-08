@@ -16,8 +16,6 @@
                           text="Simple Up&amp;Down"/>
                 <MenuItem fx:id="randomFormulaButton" mnemonicParsing="false" onAction="#handleRandomMethod"
                           text="Random"/>
-                <MenuItem fx:id="multifusionFormulaButton" mnemonicParsing="false" onAction="#handleMultiFusionMethod"
-                          text="Multi-indicator fusion"/>
                 <MenuItem fx:id="macdFormulaButton" mnemonicParsing="false" onAction="#handleMACDFormula"
                           text="MACD Formula"/>
                 <MenuItem fx:id="rsiFormulaButton" mnemonicParsing="false" onAction="#handleRSIFormula"

@@ -92,7 +92,6 @@ public class TradingController implements StockDataObserver {
         switch (methodName) {
             case "SimpleUpAndDown" -> validator = new SimpleUpAndDownTradingFormulaValidator();
             case "Random" -> validator = new RandomTradingFormulaValidator();
-            case "MultiIndicatorFusion" -> validator = new MultiIndicatorFusionTradingFormulaValidator();
             case "MACD" -> validator = new MACDTradingFormulaValidator();
             case "RSI" -> validator = new RSITradingFormulaValidator();
             default -> {
