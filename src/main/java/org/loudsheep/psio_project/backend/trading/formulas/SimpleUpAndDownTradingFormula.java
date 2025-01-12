@@ -9,8 +9,8 @@ import org.loudsheep.psio_project.backend.trading.TradingFormula;
 import java.util.Map;
 
 public class SimpleUpAndDownTradingFormula implements TradingFormula {
-    private static final String name = "SimpleUpAndDown Strategy";
-    private static final String description = "Simple strategy that sells when downward trend, and buys when upward";
+    private static final String name = "SimpleUpAndDown Formula";
+    private static final String description = "Simple formula that sells when downward trend, and buys when upward";
     private boolean stopExecution = false;
 
     private final int daysBackToCheck;

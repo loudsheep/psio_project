@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Map;
 
 public class RSITradingFormula implements TradingFormula {
-    private static final String name = "MACD Strategy";
-    private static final String description = "Uses MACD to identify buy and sell signals.";
+    private static final String name = "RSI Formula";
+    private static final String description = "Uses Relative Strength Index and price thresholds";
 
     private final int period;
     private final int sellThreshold;

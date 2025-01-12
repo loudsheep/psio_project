@@ -183,7 +183,7 @@ public class SimulationFormulaSelectController implements StockDataObserver {
         formulaMenuButton.setText(macdFormulaButton.getText());
     }
 
-    public void handleRSIFormula(ActionEvent actionEvent) {
+    public void handleRSIFormula() {
         loadFormForMethod("RSI", Map.of());
         formulaMenuButton.setText(rsiFormulaButton.getText());
     }

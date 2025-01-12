@@ -36,7 +36,6 @@ public class SimulationResult {
 
         this.notifyObserversWithNewTransaction(newTransaction);
         this.notifyObserversWithObjectUpdate();
-
     }
 
     public boolean hasEnoughMoneyToBuy(int amount, double price) {

@@ -9,7 +9,7 @@ import org.loudsheep.psio_project.backend.trading.TradingFormula;
 import java.util.Map;
 
 public class RandomTradingFormula implements TradingFormula {
-    private static final String name = "Random Strategy";
+    private static final String name = "Random Formula";
     private static final String description = "Random decisions";
 
     private final SimulationResult result;

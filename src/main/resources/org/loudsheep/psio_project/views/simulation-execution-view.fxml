@@ -96,6 +96,6 @@
             <Label fx:id="budgetIncreaseLabel" layoutY="51.0" text="Budget increase:" />
          </children>
       </Pane>
-      <Button layoutX="671.0" layoutY="67.0" mnemonicParsing="false" onAction="#handleMethodSave" prefHeight="3.0" prefWidth="98.0" text="Save method" />
+      <Button layoutX="671.0" layoutY="67.0" mnemonicParsing="false" onAction="#handleMethodSave" prefHeight="3.0" prefWidth="98.0" text="Save formula" />
    </children>
 </AnchorPane>

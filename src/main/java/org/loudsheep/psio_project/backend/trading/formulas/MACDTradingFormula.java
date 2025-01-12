@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Map;
 
 public class MACDTradingFormula implements TradingFormula {
-    private static final String name = "MACD Strategy";
+    private static final String name = "MACD Formula";
     private static final String description = "Uses MACD to identify buy and sell signals.";
 
     private final int shortPeriod;

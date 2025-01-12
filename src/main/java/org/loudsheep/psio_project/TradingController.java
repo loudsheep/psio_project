@@ -29,6 +29,7 @@ public class TradingController implements StockDataObserver {
     // check if all instance are initialized and ready to execute the simulation
     public boolean isReadyToExecute() {
         if (this.tradingFormulaInstance == null || !this.tradingFormulaInstance.isReadyToExecute()) return false;
+        if (this.simulationBudget <= 0) return false;
         return this.stockData != null;
     }
 

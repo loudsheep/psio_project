@@ -58,7 +58,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
         double increase = (double) Math.round((data.getLastDataPoint().close() - data.getFirstDataPoint().close()) / data.getFirstDataPoint().close() * 100 * 100) / 100;
         this.stockIncreaseLabel.setText("Stock increase: " + increase + "%");
 
-        LineChart<Number, Number> chart = this.createChart(data);
+        this.createChart(data);
 //        chart.prefWidthProperty().bind(this.chartPane.widthProperty());
 //        chart.prefHeightProperty().bind(this.chartPane.heightProperty());
 //
@@ -67,7 +67,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
         TradingController.getInstance().getTradingFormulaInstance().addStrategyResultObserver(this);
     }
 
-    private LineChart<Number, Number> createChart(StockData stockData) {
+    private void createChart(StockData stockData) {
         // Axes
         NumberAxis xAxis = new NumberAxis();
         xAxis.setLabel("Time");
@@ -103,7 +103,6 @@ public class SimulationExecutionController implements SimulationResultObserver {
 
         }
 
-
         // Dataset 2 (Green points)
         buyTransactionSeries = new XYChart.Series<>();
         buyTransactionSeries.setName("Buy transactions");
@@ -124,7 +123,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
 
         // Tooltip for the closest data point
         Tooltip tooltip = new Tooltip();
-        Tooltip.install(lineChart, tooltip);
+        Tooltip.install(this.chartPane, tooltip);
 
         // Create a vertical line that follows the mouse
         Line verticalLine = new Line();
@@ -136,18 +135,16 @@ public class SimulationExecutionController implements SimulationResultObserver {
         lineChart.prefHeightProperty().bind(this.chartPane.heightProperty());
 
         Pane pane = new Pane();
-        this.chartPane.getChildren().add(pane);
+//        this.chartPane.getChildren().add(pane);
         this.chartPane.getChildren().add(lineChart);
 
+        this.chartPane.getChildren().add(verticalLine);
 
         // Add the vertical line to the Pane
-        pane.getChildren().add(verticalLine);
+//        pane.getChildren().add(verticalLine);
 
         // Mouse moved event listener
         lineChart.setOnMouseMoved(event -> {
-
-//            System.out.println("mouseX scene: " + event.getSceneX() + " x: " + event.getX() + " screen: " + event.getScreenX());
-
             double x = xAxis.getDisplayPosition(stockData.getFirstDataPointTimestamp());
             double y = yAxis.getDisplayPosition(stockData.getFirstDataPoint().close());
             double firstPointPosition = xAxis.localToScene(x, y).getX();
@@ -160,14 +157,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
 
             double mouseCorrection = firstPointPosition - x - chartXInScene - xAxis.getLayoutX();
 
-//            System.out.println("mouseX " + mouseXInScene + " chartX: " + chartXInScene);
-//            System.out.println("line chart: " + lineChart.getLayoutX());
-//            System.out.println("yAxis " + yAxis.getLayoutBounds());
-//            System.out.println("yAxis pos " + yAxis.getLayoutX() + " ");
-//            System.out.println("xAxis zero " + xAxis.getLayoutX() + " " + xAxis.getLayoutBounds());
-
             // Calculate the mouse's x position relative to the LineChart
-//            double mouseCorrection =
             double mouseXRelativeToChart = mouseXInScene - chartXInScene - yAxis.getLayoutX() - yAxis.getLayoutBounds().getWidth() - mouseCorrection;
 
             // Adjust vertical line to follow mouse position
@@ -193,11 +183,9 @@ public class SimulationExecutionController implements SimulationResultObserver {
         });
 
         // Hide the vertical line when the mouse is no longer over the chart
-        lineChart.setOnMouseExited(event -> {
-            verticalLine.setVisible(false);
-        });
-
-        return lineChart;
+//        lineChart.setOnMouseExited(event -> {
+//            verticalLine.setVisible(false);
+//        });
     }
 
     private XYChart.Data<Number, Number> getClosestDataPoint(XYChart.Series<Number, Number> series, double mouseX, NumberAxis xAxis) {
@@ -215,8 +203,6 @@ public class SimulationExecutionController implements SimulationResultObserver {
                 closestData = data;
             }
         }
-
-//        System.out.println(mouseX + " - Closest point: " + new Date((long)closestData.getXValue() * 1000) + " x: " + xAxis.getDisplayPosition(closestData.getXValue()));
 
         return closestData;
     }
@@ -274,9 +260,9 @@ public class SimulationExecutionController implements SimulationResultObserver {
     }
 
     public void handleMethodSave() {
-        TextInputDialog dialog = new TextInputDialog("method");
+        TextInputDialog dialog = new TextInputDialog("formula");
         dialog.setTitle("Enter name");
-        dialog.setHeaderText("Give your method a name");
+        dialog.setHeaderText("Give your formula a name");
         dialog.setContentText("Please enter name:");
 
         Optional<String> result = dialog.showAndWait();

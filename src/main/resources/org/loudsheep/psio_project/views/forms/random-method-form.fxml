@@ -6,8 +6,6 @@
 
 <VBox fx:id="VBoxPane" prefHeight="139.0" prefWidth="150.0" xmlns="http://javafx.com/javafx/11.0.14-internal" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.loudsheep.psio_project.frontend.controllers.forms.RandomFormulaFormController">
     <children>
-      <Label text="Simulation budget" />
-      <TextField fx:id="budgetField" promptText="Enter a number" />
         <Button onAction="#handleSubmit" text="Save">
          <VBox.margin>
             <Insets top="15.0" />
