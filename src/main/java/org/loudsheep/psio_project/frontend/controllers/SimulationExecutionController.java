@@ -174,7 +174,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
                 // Show tooltip near the vertical line with the closest data value
                 double tooltipX = mouseXRelativeToChart + 10; // Adjust the tooltip X position slightly to the right
                 double tooltipY = Math.round(closestData.getYValue().doubleValue() * 100) / 100.0;
-                tooltip.setText("Value: " + tooltipY + "\n" + DateStringConverter.timestampToDateString(closestData.getXValue().longValue()));
+                tooltip.setText("Price: " + tooltipY + "\n" + DateStringConverter.timestampToDateString(closestData.getXValue().longValue()));
 //                tooltip.setX(tooltipX + SceneManager.getStage().getX());
 //                tooltip.setY(yAxis.getDisplayPosition(tooltipY));
                 tooltip.setX(event.getScreenX());
@@ -256,7 +256,7 @@ public class SimulationExecutionController implements SimulationResultObserver {
     public void handleBackToSelection() {
         TradingController.getInstance().stopExecution();
 
-        SceneManager.switchScene("views/formula-select-view.fxml", "Select Strategy");
+        SceneManager.switchScene("views/formula-select-view.fxml", "Select Formula");
     }
 
     public void handleMethodSave() {

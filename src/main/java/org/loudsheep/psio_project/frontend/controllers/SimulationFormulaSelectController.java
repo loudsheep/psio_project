@@ -256,10 +256,10 @@ public class SimulationFormulaSelectController implements StockDataObserver {
     @FXML
     public void handleSaveButtonClick() {
         if (!TradingController.getInstance().isReadyToExecute()) {
-            Alert alert = new Alert(Alert.AlertType.ERROR, "Not enough data to execute the strategy", ButtonType.OK);
+            Alert alert = new Alert(Alert.AlertType.ERROR, "Not enough data to execute the simulation", ButtonType.OK);
             alert.showAndWait();
         } else {
-            SceneManager.switchScene("views/simulation-execution-view.fxml", "Execute Strategy");
+            SceneManager.switchScene("views/simulation-execution-view.fxml", "Execute Simulation");
         }
     }
 }

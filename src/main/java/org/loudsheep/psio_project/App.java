@@ -15,7 +15,7 @@ public class App extends Application {
 
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource("views/formula-select-view.fxml"));
         Scene scene = new Scene(fxmlLoader.load());
-        stage.setTitle("Stock Strategy Simulation");
+        stage.setTitle("Stock Simulation");
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();

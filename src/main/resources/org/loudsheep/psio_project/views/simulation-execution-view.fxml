@@ -20,12 +20,12 @@
                <padding>
                   <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                </padding></Label>
-            <Label layoutY="-2.0" text="Strategy:">
+            <Label layoutY="-2.0" text="Formula:">
                <padding>
                   <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                </padding>
             </Label>
-            <Label alignment="TOP_LEFT" layoutY="18.0" prefHeight="19.0" prefWidth="114.0" text="Strategy description:" wrapText="true">
+            <Label alignment="TOP_LEFT" layoutY="18.0" prefHeight="19.0" prefWidth="114.0" text="Formula description:" wrapText="true">
                <padding>
                   <Insets bottom="2.0" left="2.0" right="2.0" top="2.0" />
                </padding>
